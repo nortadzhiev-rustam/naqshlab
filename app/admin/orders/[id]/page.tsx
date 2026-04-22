@@ -1,9 +1,9 @@
 import { auth } from "@/lib/auth";
-import { apiRequest } from "@/lib/api";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { OrderStatusUpdater } from "@/components/OrderStatusUpdater";
 import type { Order } from "@/lib/types";
+import { getAdminOrderById } from "@/lib/backend/admin";
 
 export default async function AdminOrderDetailPage({
   params,
@@ -15,10 +15,7 @@ export default async function AdminOrderDetailPage({
 
   let order: Order | null = null;
   try {
-    order = await apiRequest<Order>(`/admin/orders/${id}`, {
-      userId: session?.user?.id,
-      role: "ADMIN",
-    });
+    order = await getAdminOrderById(id, session?.user?.id);
   } catch {
     notFound();
   }

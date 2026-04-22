@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
-import { apiRequest } from "@/lib/api";
 import Link from "next/link";
 import type { Order, OrderStatus } from "@/lib/types";
+import { listAdminOrders } from "@/lib/backend/admin";
 
 const STATUS_STYLES: Record<OrderStatus, string> = {
   PENDING: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
@@ -24,13 +24,10 @@ export default async function AdminOrdersPage({
 
   let orders: Order[] = [];
   try {
-    orders = await apiRequest<Order[]>("/admin/orders", {
-      userId: session?.user?.id,
-      role: "ADMIN",
-      searchParams: statusFilter && validStatuses.includes(statusFilter)
-        ? { status: statusFilter }
-        : undefined,
-    });
+    orders = await listAdminOrders(
+      session?.user?.id,
+      statusFilter && validStatuses.includes(statusFilter) ? statusFilter : undefined
+    );
   } catch {
     // Show empty table
   }

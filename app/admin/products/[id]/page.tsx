@@ -1,9 +1,9 @@
 import { auth } from "@/lib/auth";
-import { apiRequest } from "@/lib/api";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { EditProductClient } from "@/components/EditProductClient";
 import type { Product } from "@/lib/types";
+import { getAdminProductById } from "@/lib/backend/admin";
 
 export default async function EditProductPage({
   params,
@@ -15,10 +15,7 @@ export default async function EditProductPage({
 
   let product: Product | null = null;
   try {
-    product = await apiRequest<Product>(`/products/${id}`, {
-      userId: session?.user?.id,
-      role: "ADMIN",
-    });
+    product = await getAdminProductById(id, session?.user?.id);
   } catch {
     notFound();
   }

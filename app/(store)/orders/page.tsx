@@ -1,8 +1,8 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { apiRequest } from "@/lib/api";
 import Link from "next/link";
 import type { Order, OrderStatus } from "@/lib/types";
+import { listOrdersForUser } from "@/lib/backend/store";
 
 const STATUS_STYLES: Record<OrderStatus, string> = {
   PENDING: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
@@ -18,7 +18,7 @@ export default async function OrdersPage() {
 
   let orders: Order[] = [];
   try {
-    orders = await apiRequest<Order[]>("/orders", { userId: session.user.id });
+    orders = await listOrdersForUser(session.user.id);
   } catch {
     // Show empty state if API is unreachable
   }

@@ -1,19 +1,15 @@
 import { auth } from "@/lib/auth";
-import { apiRequest } from "@/lib/api";
 import Link from "next/link";
 import { Plus, Pencil } from "lucide-react";
 import type { Product } from "@/lib/types";
+import { listAdminProducts } from "@/lib/backend/admin";
 
 export default async function AdminProductsPage() {
   const session = await auth();
 
   let products: Product[] = [];
   try {
-    products = await apiRequest<Product[]>("/products", {
-      userId: session?.user?.id,
-      role: "ADMIN",
-      searchParams: { includeVariantCount: "true" },
-    });
+    products = await listAdminProducts(session?.user?.id);
   } catch {
     // Show empty table
   }

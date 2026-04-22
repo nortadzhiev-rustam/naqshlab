@@ -4,8 +4,14 @@ import { auth } from "@/lib/auth";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { apiRequest } from "@/lib/api";
 import type { OrderStatus } from "@/lib/types";
+import {
+  addAdminProductVariant,
+  createAdminProduct,
+  deleteAdminProductVariant,
+  updateAdminProduct,
+  updateOrderStatusAsAdmin,
+} from "@/lib/backend/admin";
 
 const productSchema = z.object({
   name: z.string().min(2),
@@ -29,18 +35,19 @@ export type ProductFormState = {
 
 async function requireAdmin() {
   const session = await auth();
-  // @ts-expect-error role is a custom field
-  if (!session || session.user?.role !== "ADMIN") {
+  const userId = session?.user?.id;
+  const role = (session?.user as { role?: string } | undefined)?.role;
+  if (!userId || role !== "admin") {
     throw new Error("Unauthorized");
   }
-  return session;
+  return { userId };
 }
 
 export async function createProduct(
   _prev: ProductFormState,
   formData: FormData
 ): Promise<ProductFormState> {
-  const session = await requireAdmin();
+  const admin = await requireAdmin();
 
   const parsed = productSchema.safeParse({
     name: formData.get("name"),
@@ -56,12 +63,7 @@ export async function createProduct(
   }
 
   try {
-    await apiRequest("/products", {
-      method: "POST",
-      userId: session.user!.id,
-      role: "ADMIN",
-      body: { ...parsed.data, images: [] },
-    });
+    await createAdminProduct(admin.userId, { ...parsed.data, images: [] });
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Failed to create product." };
   }
@@ -75,7 +77,7 @@ export async function updateProduct(
   _prev: ProductFormState,
   formData: FormData
 ): Promise<ProductFormState> {
-  const session = await requireAdmin();
+  const admin = await requireAdmin();
 
   const parsed = productSchema.safeParse({
     name: formData.get("name"),
@@ -91,12 +93,7 @@ export async function updateProduct(
   }
 
   try {
-    await apiRequest(`/products/${id}`, {
-      method: "PUT",
-      userId: session.user!.id,
-      role: "ADMIN",
-      body: parsed.data,
-    });
+    await updateAdminProduct(admin.userId, id, parsed.data);
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Failed to update product." };
   }
@@ -107,7 +104,7 @@ export async function updateProduct(
 }
 
 export async function addVariant(productId: string, formData: FormData) {
-  const session = await requireAdmin();
+  const admin = await requireAdmin();
 
   const label = String(formData.get("label") ?? "").trim();
   const priceModifier = Number(formData.get("priceModifier") ?? 0);
@@ -115,37 +112,27 @@ export async function addVariant(productId: string, formData: FormData) {
 
   if (!label) return;
 
-  await apiRequest(`/products/${productId}/variants`, {
-    method: "POST",
-    userId: session.user!.id,
-    role: "ADMIN",
-    body: { label, priceModifier, stock },
+  await addAdminProductVariant(admin.userId, productId, {
+    label,
+    priceModifier,
+    stock,
   });
 
   revalidatePath(`/admin/products/${productId}`);
 }
 
 export async function deleteVariant(id: string, productId: string) {
-  const session = await requireAdmin();
+  const admin = await requireAdmin();
 
-  await apiRequest(`/products/${productId}/variants/${id}`, {
-    method: "DELETE",
-    userId: session.user!.id,
-    role: "ADMIN",
-  });
+  await deleteAdminProductVariant(admin.userId, productId, id);
 
   revalidatePath(`/admin/products/${productId}`);
 }
 
 export async function updateOrderStatus(orderId: string, status: OrderStatus) {
-  const session = await requireAdmin();
+  const admin = await requireAdmin();
 
-  await apiRequest(`/orders/${orderId}/status`, {
-    method: "PATCH",
-    userId: session.user!.id,
-    role: "ADMIN",
-    body: { status },
-  });
+  await updateOrderStatusAsAdmin(admin.userId, orderId, status);
 
   revalidatePath("/admin/orders");
   revalidatePath(`/admin/orders/${orderId}`);

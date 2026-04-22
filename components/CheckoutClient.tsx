@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useCartStore } from "@/lib/cart-store";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Elements,
   PaymentElement,
@@ -17,11 +18,9 @@ const stripePromise = loadStripe(
 );
 
 function PaymentForm({
-  clientSecret,
   orderId,
   onSuccess,
 }: {
-  clientSecret: string;
   orderId: string;
   onSuccess: () => void;
 }) {
@@ -115,9 +114,9 @@ export function CheckoutClient() {
     return (
       <p className="text-center text-zinc-500 py-20">
         Your cart is empty.{" "}
-        <a href="/products" className="underline underline-offset-4">
+        <Link href="/products" className="underline underline-offset-4">
           Shop now
-        </a>
+        </Link>
       </p>
     );
   }
@@ -173,7 +172,6 @@ export function CheckoutClient() {
             <h2 className="text-lg font-semibold">Payment</h2>
             <Elements stripe={stripePromise} options={{ clientSecret }}>
               <PaymentForm
-                clientSecret={clientSecret}
                 orderId={orderId!}
                 onSuccess={handlePaymentSuccess}
               />

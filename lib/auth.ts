@@ -1,8 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
-
-const API_BASE = (process.env.API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
+import { loginBackendUser } from "@/lib/backend/auth";
 
 const loginSchema = z.object({
   email: z.email(),
@@ -25,19 +24,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!parsed.success) return null;
 
         try {
-          const res = await fetch(`${API_BASE}/auth/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(parsed.data),
-          });
-          if (!res.ok) return null;
-          const user = await res.json() as {
-            id: string;
-            name: string;
-            email: string;
-            role: string;
-          };
-          return user;
+          return await loginBackendUser(parsed.data);
         } catch {
           return null;
         }

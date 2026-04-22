@@ -1,17 +1,14 @@
 import { auth } from "@/lib/auth";
-import { apiRequest } from "@/lib/api";
 import { ShoppingBag, Package, DollarSign, Clock } from "lucide-react";
 import type { AdminStats } from "@/lib/types";
+import { getAdminStats } from "@/lib/backend/admin";
 
 export default async function AdminDashboard() {
   const session = await auth();
 
   let stats: AdminStats = { totalOrders: 0, pendingOrders: 0, totalRevenue: 0, totalProducts: 0 };
   try {
-    stats = await apiRequest<AdminStats>("/admin/stats", {
-      userId: session?.user?.id,
-      role: "ADMIN",
-    });
+    stats = await getAdminStats(session?.user?.id);
   } catch {
     // Show zeros if API unreachable
   }

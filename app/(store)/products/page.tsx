@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { apiRequest } from "@/lib/api";
-import type { Product, Category } from "@/lib/types";
+import type { Category } from "@/lib/types";
+import { listProducts } from "@/lib/backend/store";
 
 const CATEGORY_LABELS: Record<Category, string> = {
   APPAREL: "Apparel",
@@ -19,13 +19,11 @@ export default async function ProductsPage({
   const category = params.category?.toUpperCase() as Category | undefined;
   const customizableOnly = params.customizable === "true";
 
-  const products = await apiRequest<Product[]>("/products", {
-    searchParams: {
-      ...(category && Object.keys(CATEGORY_LABELS).includes(category)
-        ? { category }
-        : {}),
-      ...(customizableOnly ? { customizable: "true" } : {}),
-    },
+  const products = await listProducts({
+    ...(category && Object.keys(CATEGORY_LABELS).includes(category)
+      ? { category }
+      : {}),
+    ...(customizableOnly ? { customizable: true } : {}),
   });
 
   return (

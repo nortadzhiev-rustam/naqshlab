@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
-import { apiRequest } from "@/lib/api";
 import { ProductDetailClient } from "@/components/ProductDetailClient";
 import type { Product } from "@/lib/types";
+import { getProductBySlug, listProducts } from "@/lib/backend/store";
 
 export async function generateStaticParams() {
   try {
-    const products = await apiRequest<Product[]>("/products");
+    const products = await listProducts();
     return products.map((p) => ({ slug: p.slug }));
   } catch {
     return [];
@@ -21,7 +21,7 @@ export default async function ProductDetailPage({
 
   let product: Product | null = null;
   try {
-    product = await apiRequest<Product>(`/products/slug/${slug}`);
+    product = await getProductBySlug(slug);
   } catch {
     notFound();
   }

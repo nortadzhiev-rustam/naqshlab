@@ -3,8 +3,7 @@
 import { z } from "zod";
 import { signIn } from "@/lib/auth";
 import { AuthError } from "next-auth";
-
-const API_BASE = (process.env.API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
+import { registerBackendUser } from "@/lib/backend/auth";
 
 const registerSchema = z.object({
   name: z.string().min(2),
@@ -32,20 +31,11 @@ export async function register(
   }
 
   try {
-    const res = await fetch(`${API_BASE}/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(parsed.data),
-    });
-
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({})) as { message?: string };
-      return { error: data.message ?? "Registration failed. Please try again." };
-    }
-
+    await registerBackendUser(parsed.data);
     return { success: true };
-  } catch {
-    return { error: "Could not connect to the server. Please try again." };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : undefined;
+    return { error: msg ?? "Registration failed. Please try again." };
   }
 }
 

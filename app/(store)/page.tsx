@@ -1,14 +1,12 @@
 import Link from "next/link";
-import { apiRequest } from "@/lib/api";
 import { ArrowRight, Palette, Truck, Shield } from "lucide-react";
 import type { Product } from "@/lib/types";
+import { listProducts } from "@/lib/backend/store";
 
 export default async function HomePage() {
   let featuredProducts: Product[] = [];
   try {
-    featuredProducts = await apiRequest<Product[]>("/products", {
-      searchParams: { take: "3", orderBy: "createdAt:desc" },
-    });
+    featuredProducts = await listProducts({ take: 3, orderBy: "createdAt:desc" });
   } catch {
     // Show page without featured products if API is unreachable
   }

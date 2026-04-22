@@ -6,7 +6,6 @@ import { updateProduct, addVariant, deleteVariant } from "@/lib/actions/admin";
 import { Category } from "@/lib/types";
 
 const ALL_CATEGORIES: Category[] = ["APPAREL", "MUG", "ACCESSORY", "POSTER", "OTHER"];
-import Link from "next/link";
 import { Trash2 } from "lucide-react";
 
 type Variant = { id: string; label: string; priceModifier: number; stock: number };

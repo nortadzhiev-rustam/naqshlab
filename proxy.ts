@@ -12,7 +12,7 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
     // @ts-expect-error role is a custom session field
-    if (session.user?.role !== "ADMIN") {
+    if (session.user?.role !== "admin") {
       return NextResponse.redirect(new URL("/", request.url));
     }
   }

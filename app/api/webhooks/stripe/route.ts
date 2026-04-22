@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import { headers } from "next/headers";
 import type { NextRequest } from "next/server";
-import { apiRequest } from "@/lib/api";
+import { updateOrderStatusByPaymentIntent } from "@/lib/backend/admin";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-03-25.dahlia",
@@ -29,18 +29,12 @@ export async function POST(req: NextRequest) {
 
   if (event.type === "payment_intent.succeeded") {
     const intent = event.data.object as Stripe.PaymentIntent;
-    await apiRequest(`/orders/by-payment-intent/${intent.id}`, {
-      method: "PATCH",
-      body: { status: "PROCESSING" },
-    });
+    await updateOrderStatusByPaymentIntent(intent.id, "PROCESSING");
   }
 
   if (event.type === "payment_intent.payment_failed") {
     const intent = event.data.object as Stripe.PaymentIntent;
-    await apiRequest(`/orders/by-payment-intent/${intent.id}`, {
-      method: "PATCH",
-      body: { status: "CANCELLED" },
-    });
+    await updateOrderStatusByPaymentIntent(intent.id, "CANCELLED");
   }
 
   return Response.json({ received: true });

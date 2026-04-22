@@ -2,15 +2,34 @@ import Link from "next/link";
 import { auth, signOut } from "@/lib/auth";
 import { CartDrawer } from "@/components/CartDrawer";
 import { Package, LayoutDashboard } from "lucide-react";
+import Image from "next/image";
 
 export async function Navbar() {
   const session = await auth();
 
   return (
-    <header className="sticky top-0 z-30 w-full border-b bg-white/80 backdrop-blur dark:bg-zinc-900/80 dark:border-zinc-800">
+    <header className="sticky top-0 z-30 w-full  bg-white/80 backdrop-blur ">
       <nav className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="font-semibold text-lg tracking-tight">
-          Naqshlab
+        <Link href="/" className="flex items-center">
+          <span className="relative inline-flex mt-4 items-center justify-center w-[110px] h-[40px]">
+            <Image
+              src="/ornament.png"
+              alt=""
+              width={70}
+              height={70}
+              className="absolute top-1/8 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin"
+              style={{ animationDuration: "12s" }}
+              aria-hidden="true"
+            />
+            <Image
+              src="/naqshlab.png"
+              alt="Naqshlab"
+              width={90}
+              height={30}
+              className="relative z-10"
+              priority
+            />
+          </span>
         </Link>
 
         <div className="flex items-center gap-1">
@@ -32,7 +51,7 @@ export async function Navbar() {
               </Link>
 
               {/* @ts-expect-error custom role field */}
-              {session.user.role === "ADMIN" && (
+              {session.user.role === "admin" && (
                 <Link
                   href="/admin"
                   className="rounded-md p-2 text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white transition-colors"

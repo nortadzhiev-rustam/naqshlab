@@ -1,9 +1,9 @@
 import { auth } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
-import { apiRequest } from "@/lib/api";
 import Link from "next/link";
 import type { Order, OrderStatus } from "@/lib/types";
 import { CheckCircle } from "lucide-react";
+import { getOrderForUser } from "@/lib/backend/store";
 
 const STATUS_STYLES: Record<OrderStatus, string> = {
   PENDING: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
@@ -28,7 +28,7 @@ export default async function OrderDetailPage({
 
   let order: Order | null = null;
   try {
-    order = await apiRequest<Order>(`/orders/${id}`, { userId: session.user.id });
+    order = await getOrderForUser(session.user.id, id);
   } catch {
     notFound();
   }

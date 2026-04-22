@@ -3,8 +3,7 @@
 import { auth } from "@/lib/auth";
 import Stripe from "stripe";
 import { z } from "zod";
-import { apiRequest } from "@/lib/api";
-import type { Order } from "@/lib/types";
+import { createOrderForUser } from "@/lib/backend/store";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-03-25.dahlia",
@@ -73,22 +72,18 @@ export async function createCheckout(
   });
 
   // Create Order via backend API
-  const order = await apiRequest<Order>("/orders", {
-    method: "POST",
-    userId: session.user.id,
-    body: {
-      totalAmount,
-      shippingAddress: parsedAddress.data,
-      stripePaymentIntentId: paymentIntent.id,
-      items: cartItems.map((item) => ({
-        productId: item.productId,
-        variantId: item.variantId ?? null,
-        presetDesignId: item.presetDesignId ?? null,
-        customizationData: item.customizationData ?? null,
-        quantity: item.quantity,
-        unitPrice: item.unitPrice,
-      })),
-    },
+  const order = await createOrderForUser(session.user.id, {
+    totalAmount,
+    shippingAddress: parsedAddress.data,
+    stripePaymentIntentId: paymentIntent.id,
+    items: cartItems.map((item) => ({
+      productId: item.productId,
+      variantId: item.variantId ?? null,
+      presetDesignId: item.presetDesignId ?? null,
+      customizationData: item.customizationData ?? null,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+    })),
   });
 
   return {
