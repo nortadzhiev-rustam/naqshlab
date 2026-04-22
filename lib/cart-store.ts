@@ -80,6 +80,6 @@ export const useCartStore = create<CartStore>()(
         );
       },
     }),
-    { name: "naqshlab-cart" }
+    { name: "naqshlab-cart", skipHydration: true }
   )
 );

@@ -1,14 +1,23 @@
 import { auth } from "@/lib/auth";
 import Link from "next/link";
+import { ShoppingBag } from "lucide-react";
 import type { Order, OrderStatus } from "@/lib/types";
 import { listAdminOrders } from "@/lib/backend/admin";
 
 const STATUS_STYLES: Record<OrderStatus, string> = {
-  PENDING: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-  PROCESSING: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  SHIPPED: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  DELIVERED: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-  CANCELLED: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+  PENDING: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800/40",
+  PROCESSING: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-800/40",
+  SHIPPED: "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/40 dark:text-purple-400 dark:border-purple-800/40",
+  DELIVERED: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/40",
+  CANCELLED: "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-400 dark:border-red-800/40",
+};
+
+const STATUS_DOT: Record<OrderStatus, string> = {
+  PENDING: "bg-amber-400",
+  PROCESSING: "bg-blue-400",
+  SHIPPED: "bg-purple-400",
+  DELIVERED: "bg-emerald-400",
+  CANCELLED: "bg-red-400",
 };
 
 export default async function AdminOrdersPage({
@@ -34,58 +43,57 @@ export default async function AdminOrdersPage({
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold tracking-tight mb-6">Orders</h1>
+      <div className="mb-8">
+        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-1">Management</p>
+        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Orders</h1>
+      </div>
 
       {/* Status filter */}
       <div className="flex flex-wrap gap-2 mb-6">
         <StatusLink href="/admin/orders" label="All" active={!statusFilter} />
         {validStatuses.map((s) => (
-          <StatusLink
-            key={s}
-            href={`/admin/orders?status=${s.toLowerCase()}`}
-            label={s}
-            active={statusFilter === s}
-          />
+          <StatusLink key={s} href={`/admin/orders?status=${s.toLowerCase()}`} label={s} active={statusFilter === s} />
         ))}
       </div>
 
-      <div className="rounded-2xl border overflow-hidden dark:border-zinc-800">
+      <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="border-b bg-zinc-50 dark:bg-zinc-800/50 dark:border-zinc-700">
-            <tr>
-              <th className="px-4 py-3 text-left font-medium text-zinc-500">Customer</th>
-              <th className="px-4 py-3 text-left font-medium text-zinc-500">Date</th>
-              <th className="px-4 py-3 text-left font-medium text-zinc-500">Items</th>
-              <th className="px-4 py-3 text-left font-medium text-zinc-500">Total</th>
-              <th className="px-4 py-3 text-left font-medium text-zinc-500">Status</th>
-              <th className="px-4 py-3" />
+          <thead>
+            <tr className="border-b border-zinc-100 dark:border-zinc-800">
+              <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">Customer</th>
+              <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">Date</th>
+              <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">Items</th>
+              <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">Total</th>
+              <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">Status</th>
+              <th className="px-5 py-3.5" />
             </tr>
           </thead>
-          <tbody className="divide-y dark:divide-zinc-800">
+          <tbody className="divide-y divide-zinc-50 dark:divide-zinc-800">
             {orders.map((order) => (
-              <tr key={order.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/30">
-                <td className="px-4 py-3">
-                  <p className="font-medium">{order.user?.name ?? "—"}</p>
-                  <p className="text-xs text-zinc-500">{order.user?.email}</p>
+              <tr key={order.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors">
+                <td className="px-5 py-4">
+                  <p className="font-medium text-zinc-900 dark:text-zinc-100">{order.user?.name ?? "—"}</p>
+                  <p className="text-xs text-zinc-400 mt-0.5">{order.user?.email}</p>
                 </td>
-                <td className="px-4 py-3 text-zinc-500">
-                  {new Date(order.createdAt).toLocaleDateString("en-US")}
+                <td className="px-5 py-4 text-zinc-500 text-xs">
+                  {new Date(order.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-5 py-4 text-zinc-500">
                   {order.items.reduce((acc, i) => acc + i.quantity, 0)}
                 </td>
-                <td className="px-4 py-3 font-medium">
+                <td className="px-5 py-4 font-semibold text-zinc-900 dark:text-zinc-100">
                   ${Number(order.totalAmount).toFixed(2)}
                 </td>
-                <td className="px-4 py-3">
-                  <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLES[order.status]}`}>
+                <td className="px-5 py-4">
+                  <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${STATUS_STYLES[order.status]}`}>
+                    <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[order.status]}`} />
                     {order.status}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-right">
+                <td className="px-5 py-4 text-right">
                   <Link
                     href={`/admin/orders/${order.id}`}
-                    className="inline-flex items-center rounded-lg border px-3 py-1.5 text-xs font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800 transition-colors"
+                    className="inline-flex items-center rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all"
                   >
                     View
                   </Link>
@@ -94,8 +102,11 @@ export default async function AdminOrdersPage({
             ))}
             {orders.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-12 text-center text-zinc-500">
-                  No orders found.
+                <td colSpan={6} className="px-5 py-16 text-center">
+                  <div className="flex flex-col items-center gap-3">
+                    <ShoppingBag className="h-8 w-8 text-zinc-300 dark:text-zinc-600" />
+                    <p className="text-sm text-zinc-400">No orders found.</p>
+                  </div>
                 </td>
               </tr>
             )}
@@ -110,13 +121,14 @@ function StatusLink({ href, label, active }: { href: string; label: string; acti
   return (
     <Link
       href={href}
-      className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+      className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all ${
         active
-          ? "border-black bg-black text-white dark:border-white dark:bg-white dark:text-black"
-          : "border-zinc-300 hover:border-zinc-500 dark:border-zinc-700"
+          ? "border-amber-400 bg-amber-400 text-zinc-900 shadow-sm"
+          : "border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:border-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
       }`}
     >
       {label}
     </Link>
   );
 }
+

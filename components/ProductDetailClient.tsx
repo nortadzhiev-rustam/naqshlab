@@ -73,20 +73,20 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         <div className="flex gap-2">
           <button
             onClick={() => setMode("preset")}
-            className={`rounded-full px-4 py-2 text-sm font-medium border transition-colors ${
+            className={`rounded-full px-4 py-2 text-sm font-semibold border transition-all ${
               mode === "preset"
-                ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white"
-                : "border-zinc-300 dark:border-zinc-700"
+                ? "bg-zinc-900 text-white border-zinc-900 dark:bg-amber-500 dark:text-zinc-900 dark:border-amber-500"
+                : "border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:border-zinc-400"
             }`}
           >
             Choose Design
           </button>
           <button
             onClick={() => setMode("custom")}
-            className={`rounded-full px-4 py-2 text-sm font-medium border transition-colors ${
+            className={`rounded-full px-4 py-2 text-sm font-semibold border transition-all ${
               mode === "custom"
-                ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white"
-                : "border-zinc-300 dark:border-zinc-700"
+                ? "bg-zinc-900 text-white border-zinc-900 dark:bg-amber-500 dark:text-zinc-900 dark:border-amber-500"
+                : "border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:border-zinc-400"
             }`}
           >
             Customize
@@ -97,16 +97,16 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       {/* Preset designs */}
       {mode === "preset" && product.presetDesigns.length > 0 && (
         <div>
-          <p className="text-sm font-medium mb-3">Select Design</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">Select Design</p>
           <div className="flex flex-wrap gap-3">
             {product.presetDesigns.map((design) => (
               <button
                 key={design.id}
                 onClick={() => setSelectedPresetId(design.id)}
-                className={`relative overflow-hidden rounded-xl border-2 transition-colors ${
+                className={`relative overflow-hidden rounded-xl border-2 transition-all ${
                   selectedPresetId === design.id
-                    ? "border-black dark:border-white"
-                    : "border-transparent"
+                    ? "border-amber-400 shadow-md shadow-amber-400/20"
+                    : "border-transparent hover:border-zinc-200 dark:hover:border-zinc-700"
                 }`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -135,16 +135,16 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       {/* Variants */}
       {product.variants.length > 0 && (
         <div>
-          <p className="text-sm font-medium mb-3">Options</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">Options</p>
           <div className="flex flex-wrap gap-2">
             {product.variants.map((variant) => (
               <button
                 key={variant.id}
                 onClick={() => setSelectedVariantId(variant.id)}
-                className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
+                className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all ${
                   selectedVariantId === variant.id
-                    ? "border-black bg-black text-white dark:border-white dark:bg-white dark:text-black"
-                    : "border-zinc-300 hover:border-zinc-500 dark:border-zinc-700"
+                    ? "border-amber-400 bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400"
+                    : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-zinc-400"
                 }`}
               >
                 {variant.label}
@@ -161,13 +161,13 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
       {/* Price + Add to cart */}
       <div className="flex items-center gap-4">
-        <p className="text-2xl font-bold">${unitPrice.toFixed(2)}</p>
+        <p className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">${unitPrice.toFixed(2)}</p>
         <button
           onClick={handleAddToCart}
-          className={`flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-colors ${
+          className={`flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-all ${
             added
-              ? "bg-green-600 text-white"
-              : "bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+              ? "bg-emerald-500 text-white"
+              : "bg-zinc-900 text-white hover:bg-zinc-700 dark:bg-amber-500 dark:text-zinc-900 dark:hover:bg-amber-400 shadow-sm"
           }`}
         >
           {added ? (

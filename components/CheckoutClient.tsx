@@ -55,12 +55,12 @@ function PaymentForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <PaymentElement />
       {error && (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-red-500 dark:text-red-400">{error}</p>
       )}
       <button
         type="submit"
         disabled={processing || !stripe}
-        className="w-full rounded-full bg-black py-3 text-sm font-semibold text-white hover:bg-zinc-800 disabled:opacity-60 dark:bg-white dark:text-black dark:hover:bg-zinc-200 transition-colors"
+        className="w-full rounded-full bg-zinc-900 py-3 text-sm font-semibold text-white hover:bg-zinc-700 disabled:opacity-60 dark:bg-amber-500 dark:text-zinc-900 dark:hover:bg-amber-400 transition-all shadow-sm"
       >
         {processing ? "Processing…" : "Pay Now"}
       </button>
@@ -112,25 +112,28 @@ export function CheckoutClient() {
 
   if (items.length === 0 && !orderId) {
     return (
-      <p className="text-center text-zinc-500 py-20">
-        Your cart is empty.{" "}
-        <Link href="/products" className="underline underline-offset-4">
-          Shop now
+      <div className="text-center py-20">
+        <p className="text-zinc-400 mb-3">Your cart is empty.</p>
+        <Link href="/products" className="text-sm font-semibold text-amber-500 hover:text-amber-400 underline underline-offset-4 transition-colors">
+          Browse products →
         </Link>
-      </p>
+      </div>
     );
   }
+
+  const inputClass = "w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all";
+  const labelClass = "text-xs font-semibold uppercase tracking-wider text-zinc-400";
 
   return (
     <div className="grid gap-10 lg:grid-cols-2">
       {/* Left: Address + Payment */}
-      <div className="space-y-8">
+      <div className="space-y-6">
         {!clientSecret ? (
           <>
-            <h2 className="text-lg font-semibold">Shipping Address</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-zinc-400">Shipping Address</h2>
             <form onSubmit={handleAddressSubmit} className="space-y-4">
               {error && (
-                <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+                <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800/40 dark:bg-red-950/30 dark:text-red-400">
                   {error}
                 </div>
               )}
@@ -143,8 +146,8 @@ export function CheckoutClient() {
                 { name: "postalCode", label: "Postal Code", type: "text", autoComplete: "postal-code" },
                 { name: "country", label: "Country", type: "text", autoComplete: "country-name" },
               ].map((field) => (
-                <div key={field.name} className="space-y-1">
-                  <label htmlFor={field.name} className="text-sm font-medium">
+                <div key={field.name} className="space-y-1.5">
+                  <label htmlFor={field.name} className={labelClass}>
                     {field.label}
                   </label>
                   <input
@@ -153,7 +156,7 @@ export function CheckoutClient() {
                     type={field.type}
                     autoComplete={field.autoComplete}
                     required={field.required !== false}
-                    className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-black dark:border-zinc-700 dark:bg-zinc-900 dark:focus:ring-white"
+                    className={inputClass}
                   />
                 </div>
               ))}
@@ -161,7 +164,7 @@ export function CheckoutClient() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-full bg-black py-3 text-sm font-semibold text-white hover:bg-zinc-800 disabled:opacity-60 dark:bg-white dark:text-black dark:hover:bg-zinc-200 transition-colors"
+                className="w-full rounded-full bg-zinc-900 py-3 text-sm font-semibold text-white hover:bg-zinc-700 disabled:opacity-60 dark:bg-amber-500 dark:text-zinc-900 dark:hover:bg-amber-400 transition-all shadow-sm mt-2"
               >
                 {loading ? "Preparing payment…" : "Continue to Payment"}
               </button>
@@ -169,7 +172,7 @@ export function CheckoutClient() {
           </>
         ) : (
           <>
-            <h2 className="text-lg font-semibold">Payment</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-zinc-400">Payment</h2>
             <Elements stripe={stripePromise} options={{ clientSecret }}>
               <PaymentForm
                 orderId={orderId!}
@@ -182,23 +185,23 @@ export function CheckoutClient() {
 
       {/* Right: Order Summary */}
       <div>
-        <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
-        <div className="rounded-2xl border p-6 dark:border-zinc-800 space-y-4">
+        <h2 className="text-sm font-semibold uppercase tracking-widest text-zinc-400 mb-4">Order Summary</h2>
+        <div className="rounded-2xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-6 space-y-3">
           {items.map((item) => (
             <div key={item.id} className="flex justify-between text-sm">
-              <span>
+              <span className="text-zinc-600 dark:text-zinc-400">
                 {item.productName}
                 {item.variantLabel && (
-                  <span className="text-zinc-500"> — {item.variantLabel}</span>
+                  <span className="text-zinc-400"> — {item.variantLabel}</span>
                 )}
                 {" ×"}{item.quantity}
               </span>
-              <span className="font-medium">
+              <span className="font-semibold text-zinc-900 dark:text-zinc-100">
                 ${(item.unitPrice * item.quantity).toFixed(2)}
               </span>
             </div>
           ))}
-          <div className="border-t pt-4 flex justify-between font-semibold dark:border-zinc-700">
+          <div className="border-t border-zinc-100 dark:border-zinc-800 pt-3 mt-3 flex justify-between font-bold text-zinc-900 dark:text-zinc-100">
             <span>Total</span>
             <span>${subtotal().toFixed(2)}</span>
           </div>

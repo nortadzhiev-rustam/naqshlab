@@ -1,15 +1,24 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { ArrowRight, Package } from "lucide-react";
 import type { Order, OrderStatus } from "@/lib/types";
 import { listOrdersForUser } from "@/lib/backend/store";
 
 const STATUS_STYLES: Record<OrderStatus, string> = {
-  PENDING: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-  PROCESSING: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  SHIPPED: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  DELIVERED: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-  CANCELLED: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+  PENDING: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800/40",
+  PROCESSING: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-800/40",
+  SHIPPED: "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/40 dark:text-purple-400 dark:border-purple-800/40",
+  DELIVERED: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/40",
+  CANCELLED: "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-400 dark:border-red-800/40",
+};
+
+const STATUS_DOT: Record<OrderStatus, string> = {
+  PENDING: "bg-amber-400",
+  PROCESSING: "bg-blue-400",
+  SHIPPED: "bg-purple-400",
+  DELIVERED: "bg-emerald-400",
+  CANCELLED: "bg-red-400",
 };
 
 export default async function OrdersPage() {
@@ -24,46 +33,62 @@ export default async function OrdersPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
-      <h1 className="text-3xl font-bold tracking-tight mb-8">My Orders</h1>
+    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+      <div className="mb-10">
+        <p className="text-xs font-semibold uppercase tracking-widest text-amber-500 dark:text-amber-400 mb-1">Account</p>
+        <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">My Orders</h1>
+      </div>
 
       {orders.length === 0 ? (
-        <div className="text-center py-20 text-zinc-500">
-          <p>No orders yet.</p>
-          <Link href="/products" className="mt-4 inline-block text-sm font-medium underline underline-offset-4">
-            Start shopping
+        <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
+          <div className="rounded-full bg-zinc-100 dark:bg-zinc-800 p-5">
+            <Package className="h-8 w-8 text-zinc-400" />
+          </div>
+          <div>
+            <p className="font-semibold text-zinc-700 dark:text-zinc-300">No orders yet</p>
+            <p className="mt-1 text-sm text-zinc-400">Your orders will appear here once you make a purchase.</p>
+          </div>
+          <Link
+            href="/products"
+            className="flex items-center gap-2 rounded-full bg-zinc-900 px-6 py-2.5 text-sm font-semibold text-white hover:bg-zinc-700 dark:bg-amber-500 dark:text-zinc-900 dark:hover:bg-amber-400 transition-all"
+          >
+            Start shopping <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {orders.map((order) => (
             <Link
               key={order.id}
               href={`/orders/${order.id}`}
-              className="block rounded-2xl border p-6 hover:shadow-md transition-shadow dark:border-zinc-800"
+              className="group flex items-center justify-between gap-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
             >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-xs text-zinc-500 mb-1">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${STATUS_STYLES[order.status]}`}>
+                    <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[order.status]}`} />
+                    {order.status}
+                  </span>
+                  <span className="text-xs text-zinc-400">
                     {new Date(order.createdAt).toLocaleDateString("en-US", {
                       year: "numeric",
-                      month: "long",
+                      month: "short",
                       day: "numeric",
                     })}
-                  </p>
-                  <p className="font-semibold text-sm">
-                    {order.items.map((i) => i.product.name).join(", ")}
-                  </p>
-                  <p className="text-sm text-zinc-500 mt-1">
-                    {order.items.reduce((acc, i) => acc + i.quantity, 0)} item(s) ·{" "}
-                    ${Number(order.totalAmount).toFixed(2)}
-                  </p>
+                  </span>
                 </div>
-                <span
-                  className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${STATUS_STYLES[order.status]}`}
-                >
-                  {order.status}
-                </span>
+                <p className="font-medium text-zinc-900 dark:text-zinc-100 truncate text-sm">
+                  {order.items.map((i) => i.product.name).join(", ")}
+                </p>
+                <p className="text-xs text-zinc-400 mt-0.5">
+                  {order.items.reduce((acc, i) => acc + i.quantity, 0)} item(s)
+                </p>
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                <p className="font-bold text-zinc-900 dark:text-zinc-100">
+                  ${Number(order.totalAmount).toFixed(2)}
+                </p>
+                <ArrowRight className="h-4 w-4 text-zinc-300 group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all" />
               </div>
             </Link>
           ))}
@@ -72,3 +97,4 @@ export default async function OrdersPage() {
     </div>
   );
 }
+

@@ -34,14 +34,14 @@ export function OrderStatusUpdater({
         value={status}
         onChange={handleChange}
         disabled={saving}
-        className="rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-black dark:border-zinc-700 dark:bg-zinc-900 dark:focus:ring-white disabled:opacity-60"
+        className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-900 dark:text-zinc-100 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 disabled:opacity-60 transition-all"
       >
         {ALL_STATUSES.map((s) => (
           <option key={s} value={s}>{s}</option>
         ))}
       </select>
-      {saving && <span className="text-xs text-zinc-500">Saving…</span>}
-      {saved && <span className="text-xs text-green-600">Saved</span>}
+      {saving && <span className="text-xs text-zinc-400">Saving…</span>}
+      {saved && <span className="text-xs font-semibold text-emerald-500">Saved ✓</span>}
     </div>
   );
 }

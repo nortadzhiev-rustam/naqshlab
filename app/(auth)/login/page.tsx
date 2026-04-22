@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { login } from "@/lib/actions/auth";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, Suspense } from "react";
 
 function LoginForm() {
@@ -19,71 +20,80 @@ function LoginForm() {
   }, [state.success, router, callbackUrl]);
 
   return (
-    <div className="w-full max-w-sm space-y-6">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold tracking-tight">Sign in</h1>
-        <p className="mt-1 text-sm text-zinc-500">Welcome back to Naqshlab</p>
+    <div className="w-full max-w-sm">
+      {/* Logo */}
+      <div className="flex justify-center mb-8">
+        <Link href="/" className="flex items-center gap-2">
+          <Image src="/naqshlab.png" alt="Naqshlab" width={110} height={36} className="dark:brightness-0 dark:invert" />
+        </Link>
       </div>
 
-      {registered && (
-        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-300">
-          Account created! Sign in to continue.
+      <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 shadow-sm">
+        <div className="mb-6">
+          <h1 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Welcome back</h1>
+          <p className="mt-1 text-sm text-zinc-400">Sign in to your Naqshlab account</p>
         </div>
-      )}
 
-      <form action={action} className="space-y-4">
-        {state.error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
-            {state.error}
+        {registered && (
+          <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-800/40 dark:bg-emerald-950/30 dark:text-emerald-400">
+            Account created! Sign in to continue.
           </div>
         )}
 
-        <div className="space-y-1">
-          <label htmlFor="email" className="text-sm font-medium">Email</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            autoComplete="email"
-            className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-black dark:border-zinc-700 dark:bg-zinc-900 dark:focus:ring-white"
-          />
-        </div>
+        <form action={action} className="space-y-4">
+          {state.error && (
+            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800/40 dark:bg-red-950/30 dark:text-red-400">
+              {state.error}
+            </div>
+          )}
 
-        <div className="space-y-1">
-          <label htmlFor="password" className="text-sm font-medium">Password</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            required
-            autoComplete="current-password"
-            className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-black dark:border-zinc-700 dark:bg-zinc-900 dark:focus:ring-white"
-          />
-        </div>
+          <div className="space-y-1.5">
+            <label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Email</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              autoComplete="email"
+              className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all"
+            />
+          </div>
 
-        <button
-          type="submit"
-          disabled={pending}
-          className="w-full rounded-full bg-black py-3 text-sm font-semibold text-white hover:bg-zinc-800 disabled:opacity-60 dark:bg-white dark:text-black dark:hover:bg-zinc-200 transition-colors"
-        >
-          {pending ? "Signing in…" : "Sign in"}
-        </button>
-      </form>
+          <div className="space-y-1.5">
+            <label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              autoComplete="current-password"
+              className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all"
+            />
+          </div>
 
-      <p className="text-center text-sm text-zinc-500">
-        Don&apos;t have an account?{" "}
-        <Link href="/register" className="font-medium underline underline-offset-4">
-          Register
-        </Link>
-      </p>
+          <button
+            type="submit"
+            disabled={pending}
+            className="w-full rounded-full bg-zinc-900 py-3 text-sm font-semibold text-white hover:bg-zinc-700 disabled:opacity-60 dark:bg-amber-500 dark:text-zinc-900 dark:hover:bg-amber-400 transition-all shadow-sm mt-2"
+          >
+            {pending ? "Signing in…" : "Sign in"}
+          </button>
+        </form>
+
+        <p className="mt-5 text-center text-sm text-zinc-400">
+          Don&apos;t have an account?{" "}
+          <Link href="/register" className="font-semibold text-amber-500 hover:text-amber-400 transition-colors">
+            Create one
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
+    <div className="flex min-h-screen items-center justify-center px-4 bg-zinc-50 dark:bg-zinc-950">
       <Suspense>
         <LoginForm />
       </Suspense>
