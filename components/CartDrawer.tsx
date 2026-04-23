@@ -4,11 +4,13 @@ import { useCartStore } from "@/lib/cart-store";
 import { ShoppingCart, X, Trash2, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 
 export function CartDrawer() {
     const [open, setOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => { setMounted(true); }, []);
     const { items, removeItem, updateQuantity, subtotal, totalItems } =
         useCartStore();
 
@@ -30,7 +32,7 @@ export function CartDrawer() {
             </button>
 
             {/* Backdrop + drawer — portalled to <body> to escape sticky/backdrop-filter ancestor */}
-            {typeof document !== "undefined" && createPortal(
+            {mounted && createPortal(
                 <>
                     {/* Backdrop */}
                     {open && (

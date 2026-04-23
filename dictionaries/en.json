@@ -1,0 +1,172 @@
+{
+  "nav": {
+    "shop": "Shop",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "register": "Register",
+    "myOrders": "My Orders",
+    "adminPanel": "Admin Panel"
+  },
+  "cart": {
+    "title": "Cart",
+    "empty": "Your cart is empty",
+    "browse": "Browse products",
+    "subtotal": "Subtotal",
+    "checkout": "Checkout"
+  },
+  "home": {
+    "badge": "Print on Demand",
+    "headline1": "Your products,",
+    "headline2": "perfectly printed",
+    "subtext": "Custom designs for caps, mugs, and many more accessories.",
+    "shopNow": "Shop Now",
+    "learnMore": "Learn More",
+    "featuredProducts": "Featured Products",
+    "viewAll": "View All",
+    "noProducts": "No products found"
+  },
+  "products": {
+    "title": "All Products",
+    "all": "All",
+    "customizable": "Customizable",
+    "empty": "No products in this category",
+    "addToCart": "Add to Cart",
+    "added": "Added!",
+    "options": "Options",
+    "selectDesign": "Select Design",
+    "chooseDesign": "Choose Design",
+    "customize": "Customize",
+    "from": "from"
+  },
+  "orders": {
+    "title": "My Orders",
+    "account": "Account",
+    "empty": "No orders yet",
+    "emptyDesc": "Your orders will appear here after you make a purchase.",
+    "startShopping": "Start Shopping",
+    "status": {
+      "PENDING": "Pending",
+      "PROCESSING": "Processing",
+      "SHIPPED": "Shipped",
+      "DELIVERED": "Delivered",
+      "CANCELLED": "Cancelled"
+    },
+    "items": "item(s)",
+    "detail": "Order Details",
+    "placedOn": "Placed on",
+    "back": "My Orders",
+    "shippingAddress": "Shipping Address",
+    "orderSummary": "Order Summary",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "paymentSuccess": "Payment Successful!",
+    "paymentSuccessDesc": "Your order has been confirmed and will be processed shortly.",
+    "qty": "Qty",
+    "details": "Order Details",
+    "summary": "Order Summary",
+    "each": "each",
+    "design": "Design",
+    "customDesign": "Custom Design"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "shippingAddress": "Shipping Address",
+    "fullName": "Full Name",
+    "address": "Address",
+    "apartment": "Apartment / Suite (optional)",
+    "city": "City",
+    "postalCode": "Postal Code",
+    "country": "Country",
+    "continue": "Continue to Payment",
+    "preparing": "Preparing...",
+    "payment": "Payment",
+    "payNow": "Pay Now",
+    "processing": "Processing...",
+    "orderSummary": "Order Summary",
+    "total": "Total",
+    "emptyCart": "Your cart is empty.",
+    "browseProducts": "Browse products →"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to your Naqshlab account",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign In",
+      "submitting": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "createOne": "Create one",
+      "registered": "Account created! Please sign in."
+    },
+    "register": {
+      "title": "Create an account",
+      "subtitle": "Join Naqshlab and start shopping",
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Create Account",
+      "submitting": "Creating...",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign In"
+    }
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "orders": "Orders",
+    "viewStore": "View Store",
+    "stats": {
+      "totalOrders": "Total Orders",
+      "pending": "Pending",
+      "revenue": "Revenue",
+      "products": "Products",
+      "allTime": "All time",
+      "needsAction": "Needs action",
+      "exclCancelled": "Excl. cancelled",
+      "inCatalog": "In catalog"
+    },
+    "quickLinks": {
+      "addProduct": "Add Product",
+      "addProductDesc": "Create a new product",
+      "pendingOrders": "Pending Orders",
+      "pendingOrdersDesc": "{count} order(s) need attention"
+    },
+    "productsPage": {
+      "catalog": "Catalog",
+      "newProduct": "New Product",
+      "name": "Name",
+      "category": "Category",
+      "price": "Price",
+      "variants": "Variants",
+      "customizable": "Customizable",
+      "yes": "Yes",
+      "no": "No",
+      "edit": "Edit",
+      "noProducts": "No products",
+      "createFirst": "Create your first product"
+    },
+    "ordersPage": {
+      "management": "Management",
+      "all": "All",
+      "customer": "Customer",
+      "date": "Date",
+      "items": "Items",
+      "total": "Total",
+      "status": "Status",
+      "view": "View",
+      "noOrders": "No orders found"
+    },
+    "orderDetail": {
+      "backToOrders": "Orders",
+      "orderDetail": "Order Details",
+      "customer": "Customer",
+      "items": "Items",
+      "shippingAddress": "Shipping Address",
+      "orderSummary": "Order Summary",
+      "subtotal": "Subtotal",
+      "total": "Total",
+      "updateStatus": "Update Status"
+    }
+  }
+}

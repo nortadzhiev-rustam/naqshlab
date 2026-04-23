@@ -68,7 +68,7 @@ function PaymentForm({
   );
 }
 
-export function CheckoutClient() {
+export function CheckoutClient({ lang = "tg", dict }: { lang?: string; dict?: Record<string, string> }) {
   const { items, subtotal, clearCart } = useCartStore();
   const router = useRouter();
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -107,14 +107,14 @@ export function CheckoutClient() {
 
   function handlePaymentSuccess() {
     clearCart();
-    router.push(`/orders/${orderId}?payment=success`);
+    router.push(`/${lang}/orders/${orderId}?payment=success`);
   }
 
   if (items.length === 0 && !orderId) {
     return (
       <div className="text-center py-20">
-        <p className="text-zinc-400 mb-3">Your cart is empty.</p>
-        <Link href="/products" className="text-sm font-semibold text-amber-500 hover:text-amber-400 underline underline-offset-4 transition-colors">
+        <p className="text-zinc-400 mb-3">{dict?.emptyCart ?? (lang === "ru" ? "Корзина пуста." : "Сабади шумо холӣ аст.")}</p>
+        <Link href={`/${lang}/products`} className="text-sm font-semibold text-amber-500 hover:text-amber-400 underline underline-offset-4 transition-colors">
           Browse products →
         </Link>
       </div>
@@ -130,7 +130,7 @@ export function CheckoutClient() {
       <div className="space-y-6">
         {!clientSecret ? (
           <>
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-zinc-400">Shipping Address</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-zinc-400">{dict?.shippingAddress ?? (lang === "ru" ? "Адрес доставки" : "Суроғаи таҳвил")}</h2>
             <form onSubmit={handleAddressSubmit} className="space-y-4">
               {error && (
                 <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800/40 dark:bg-red-950/30 dark:text-red-400">
@@ -166,13 +166,13 @@ export function CheckoutClient() {
                 disabled={loading}
                 className="w-full rounded-full bg-zinc-900 py-3 text-sm font-semibold text-white hover:bg-zinc-700 disabled:opacity-60 dark:bg-amber-500 dark:text-zinc-900 dark:hover:bg-amber-400 transition-all shadow-sm mt-2"
               >
-                {loading ? "Preparing payment…" : "Continue to Payment"}
+                {loading ? (dict?.preparing ?? (lang === "ru" ? "Подготовка..." : "Омода кардан...")) : (dict?.continue ?? (lang === "ru" ? "Перейти к оплате" : "Ба пардохт гузаштан"))}
               </button>
             </form>
           </>
         ) : (
           <>
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-zinc-400">Payment</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-zinc-400">{dict?.payment ?? (lang === "ru" ? "Оплата" : "Пардохт")}</h2>
             <Elements stripe={stripePromise} options={{ clientSecret }}>
               <PaymentForm
                 orderId={orderId!}
@@ -185,7 +185,7 @@ export function CheckoutClient() {
 
       {/* Right: Order Summary */}
       <div>
-        <h2 className="text-sm font-semibold uppercase tracking-widest text-zinc-400 mb-4">Order Summary</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-widest text-zinc-400 mb-4">{dict?.orderSummary ?? (lang === "ru" ? "Итог заказа" : "Хулосаи фармоиш")}</h2>
         <div className="rounded-2xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-6 space-y-3">
           {items.map((item) => (
             <div key={item.id} className="flex justify-between text-sm">
@@ -202,7 +202,7 @@ export function CheckoutClient() {
             </div>
           ))}
           <div className="border-t border-zinc-100 dark:border-zinc-800 pt-3 mt-3 flex justify-between font-bold text-zinc-900 dark:text-zinc-100">
-            <span>Total</span>
+            <span>{dict?.total ?? (lang === "ru" ? "Итого" : "Ҷамъ")}</span>
             <span>${subtotal().toFixed(2)}</span>
           </div>
         </div>

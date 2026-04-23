@@ -1,0 +1,172 @@
+{
+  "nav": {
+    "shop": "Магазин",
+    "signIn": "Войти",
+    "signOut": "Выйти",
+    "register": "Регистрация",
+    "myOrders": "Мои заказы",
+    "adminPanel": "Панель администратора"
+  },
+  "cart": {
+    "title": "Корзина",
+    "empty": "Ваша корзина пуста",
+    "browse": "Перейти в магазин",
+    "subtotal": "Итого",
+    "checkout": "Оформить заказ"
+  },
+  "home": {
+    "badge": "Печать по требованию",
+    "headline1": "Ваши товары,",
+    "headline2": "напечатанные идеально",
+    "subtext": "Индивидуальный дизайн для кепок, кружек и многого другого.",
+    "shopNow": "Начать покупки",
+    "learnMore": "Узнать больше",
+    "featuredProducts": "Популярные товары",
+    "viewAll": "Смотреть все",
+    "noProducts": "Товары не найдены"
+  },
+  "products": {
+    "title": "Все товары",
+    "all": "Все",
+    "customizable": "С настройкой",
+    "empty": "В этой категории нет товаров",
+    "addToCart": "В корзину",
+    "added": "Добавлено!",
+    "options": "Варианты",
+    "selectDesign": "Выбрать дизайн",
+    "chooseDesign": "Выбрать дизайн",
+    "customize": "Настроить",
+    "from": "от"
+  },
+  "orders": {
+    "title": "Мои заказы",
+    "account": "Аккаунт",
+    "empty": "Заказов пока нет",
+    "emptyDesc": "Ваши заказы появятся здесь после покупки.",
+    "startShopping": "Начать покупки",
+    "status": {
+      "PENDING": "Ожидает",
+      "PROCESSING": "В обработке",
+      "SHIPPED": "Отправлен",
+      "DELIVERED": "Доставлен",
+      "CANCELLED": "Отменён"
+    },
+    "items": "товар(ов)",
+    "detail": "Детали заказа",
+    "placedOn": "Дата заказа",
+    "back": "Мои заказы",
+    "shippingAddress": "Адрес доставки",
+    "orderSummary": "Сводка заказа",
+    "subtotal": "Итого",
+    "total": "Всего",
+    "paymentSuccess": "Оплата прошла успешно!",
+    "paymentSuccessDesc": "Ваш заказ подтверждён и скоро будет обработан.",
+    "qty": "Кол-во",
+    "details": "Детали заказа",
+    "summary": "Итог заказа",
+    "each": "за шт.",
+    "design": "Дизайн",
+    "customDesign": "Кастомный дизайн"
+  },
+  "checkout": {
+    "title": "Оформление заказа",
+    "shippingAddress": "Адрес доставки",
+    "fullName": "Полное имя",
+    "address": "Адрес",
+    "apartment": "Квартира / Офис (необязательно)",
+    "city": "Город",
+    "postalCode": "Почтовый индекс",
+    "country": "Страна",
+    "continue": "Перейти к оплате",
+    "preparing": "Подготовка...",
+    "payment": "Оплата",
+    "payNow": "Оплатить",
+    "processing": "Обработка...",
+    "orderSummary": "Сводка заказа",
+    "total": "Всего",
+    "emptyCart": "Ваша корзина пуста.",
+    "browseProducts": "Перейти в магазин →"
+  },
+  "auth": {
+    "login": {
+      "title": "С возвращением",
+      "subtitle": "Войдите в аккаунт Naqshlab",
+      "email": "Email",
+      "password": "Пароль",
+      "submit": "Войти",
+      "submitting": "Вход...",
+      "noAccount": "Нет аккаунта?",
+      "createOne": "Создать",
+      "registered": "Аккаунт создан! Войдите."
+    },
+    "register": {
+      "title": "Создать аккаунт",
+      "subtitle": "Присоединяйтесь к Naqshlab и начните покупки",
+      "name": "Имя",
+      "email": "Email",
+      "password": "Пароль",
+      "submit": "Создать аккаунт",
+      "submitting": "Создание...",
+      "hasAccount": "Уже есть аккаунт?",
+      "signIn": "Войти"
+    }
+  },
+  "admin": {
+    "dashboard": "Панель управления",
+    "products": "Товары",
+    "orders": "Заказы",
+    "viewStore": "Перейти в магазин",
+    "stats": {
+      "totalOrders": "Всего заказов",
+      "pending": "Ожидают",
+      "revenue": "Выручка",
+      "products": "Товары",
+      "allTime": "За всё время",
+      "needsAction": "Требуют внимания",
+      "exclCancelled": "Без отменённых",
+      "inCatalog": "В каталоге"
+    },
+    "quickLinks": {
+      "addProduct": "Добавить товар",
+      "addProductDesc": "Создать новый товар",
+      "pendingOrders": "Ожидающие заказы",
+      "pendingOrdersDesc": "{count} заказ(ов) требуют внимания"
+    },
+    "productsPage": {
+      "catalog": "Каталог",
+      "newProduct": "Новый товар",
+      "name": "Название",
+      "category": "Категория",
+      "price": "Цена",
+      "variants": "Варианты",
+      "customizable": "С настройкой",
+      "yes": "Да",
+      "no": "Нет",
+      "edit": "Редактировать",
+      "noProducts": "Товаров нет",
+      "createFirst": "Создать первый товар"
+    },
+    "ordersPage": {
+      "management": "Управление",
+      "all": "Все",
+      "customer": "Покупатель",
+      "date": "Дата",
+      "items": "Товары",
+      "total": "Сумма",
+      "status": "Статус",
+      "view": "Просмотр",
+      "noOrders": "Заказы не найдены"
+    },
+    "orderDetail": {
+      "backToOrders": "Заказы",
+      "orderDetail": "Детали заказа",
+      "customer": "Покупатель",
+      "items": "Товары",
+      "shippingAddress": "Адрес доставки",
+      "orderSummary": "Сводка заказа",
+      "subtotal": "Итого",
+      "total": "Всего",
+      "updateStatus": "Обновить статус"
+    }
+  }
+}

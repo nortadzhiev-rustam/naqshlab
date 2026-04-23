@@ -28,9 +28,18 @@ type ProductDetailClientProps = {
     variants: Variant[];
     presetDesigns: PresetDesign[];
   };
+  lang?: string;
+  dict?: {
+    addToCart: string;
+    added: string;
+    options: string;
+    selectDesign: string;
+    chooseDesign: string;
+    customize: string;
+  };
 };
 
-export function ProductDetailClient({ product }: ProductDetailClientProps) {
+export function ProductDetailClient({ product, dict }: ProductDetailClientProps) {
   const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(
     product.variants[0]?.id
   );
@@ -79,7 +88,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 : "border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:border-zinc-400"
             }`}
           >
-            Choose Design
+            {dict?.chooseDesign ?? "Choose Design"}
           </button>
           <button
             onClick={() => setMode("custom")}
@@ -89,7 +98,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 : "border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:border-zinc-400"
             }`}
           >
-            Customize
+            {dict?.customize ?? "Customize"}
           </button>
         </div>
       )}
@@ -97,7 +106,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       {/* Preset designs */}
       {mode === "preset" && product.presetDesigns.length > 0 && (
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">Select Design</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">{dict?.selectDesign ?? "Select Design"}</p>
           <div className="flex flex-wrap gap-3">
             {product.presetDesigns.map((design) => (
               <button
@@ -135,7 +144,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       {/* Variants */}
       {product.variants.length > 0 && (
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">Options</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">{dict?.options ?? "Options"}</p>
           <div className="flex flex-wrap gap-2">
             {product.variants.map((variant) => (
               <button
@@ -172,11 +181,11 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         >
           {added ? (
             <>
-              <Check className="h-4 w-4" /> Added!
+              <Check className="h-4 w-4" /> {dict?.added ?? "Added!"}
             </>
           ) : (
             <>
-              <ShoppingCart className="h-4 w-4" /> Add to Cart
+              <ShoppingCart className="h-4 w-4" /> {dict?.addToCart ?? "Add to Cart"}
             </>
           )}
         </button>

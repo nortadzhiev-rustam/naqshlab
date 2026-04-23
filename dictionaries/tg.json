@@ -1,0 +1,172 @@
+{
+  "nav": {
+    "shop": "Мағоза",
+    "signIn": "Воридшавӣ",
+    "signOut": "Хуруҷ",
+    "register": "Сабтном",
+    "myOrders": "Фармоишҳои ман",
+    "adminPanel": "Панели маъмур"
+  },
+  "cart": {
+    "title": "Сабад",
+    "empty": "Сабади шумо холӣ аст",
+    "browse": "Гашту гузар",
+    "subtotal": "Маблағи умумӣ",
+    "checkout": "Пардохт"
+  },
+  "home": {
+    "badge": "Чоп дархост",
+    "headline1": "Маҳсулоти шумо,",
+    "headline2": "мукаммал чоп шуда",
+    "subtext": "Дизайни фармоишӣ барои сарпӯш, косаҳо ва аксессуарҳои зиёд.",
+    "shopNow": "Харид кунед",
+    "learnMore": "Бештар донед",
+    "featuredProducts": "Маҳсулоти машҳур",
+    "viewAll": "Ҳамаро бинед",
+    "noProducts": "Маҳсулот ёфт нашуд"
+  },
+  "products": {
+    "title": "Ҳамаи маҳсулот",
+    "all": "Ҳама",
+    "customizable": "Фармоишпазир",
+    "empty": "Дар ин категория маҳсулот нест",
+    "addToCart": "Ба сабад илова кунед",
+    "added": "Илова шуд!",
+    "options": "Вариантҳо",
+    "selectDesign": "Дизайн интихоб кунед",
+    "chooseDesign": "Дизайн интихоб кунед",
+    "customize": "Фармоишӣ кунед",
+    "from": "аз"
+  },
+  "orders": {
+    "title": "Фармоишҳои ман",
+    "account": "Ҳисоб",
+    "empty": "Ҳанӯз фармоишҳо нест",
+    "emptyDesc": "Пас аз харид, фармоишҳои шумо дар ин ҷо намоиш дода мешаванд.",
+    "startShopping": "Харидро оғоз кунед",
+    "status": {
+      "PENDING": "Интизор",
+      "PROCESSING": "Коркард",
+      "SHIPPED": "Фиристода шуд",
+      "DELIVERED": "Расонда шуд",
+      "CANCELLED": "Бекор карда шуд"
+    },
+    "items": "ашё",
+    "detail": "Тафсилоти фармоиш",
+    "placedOn": "Санаи фармоиш",
+    "back": "Фармоишҳои ман",
+    "shippingAddress": "Суроғаи таҳвил",
+    "orderSummary": "Хулосаи фармоиш",
+    "subtotal": "Маблағи умумӣ",
+    "total": "Ҷамъи кул",
+    "paymentSuccess": "Пардохт бомуваффақият!",
+    "paymentSuccessDesc": "Фармоиши шумо тасдиқ шуд ва ба зудӣ коркард хоҳад шуд.",
+    "qty": "Миқдор",
+    "details": "Тафсилоти фармоиш",
+    "summary": "Хулосаи фармоиш",
+    "each": "ҳар як",
+    "design": "Дизайн",
+    "customDesign": "Дизайни фармоишӣ"
+  },
+  "checkout": {
+    "title": "Пардохт",
+    "shippingAddress": "Суроғаи таҳвил",
+    "fullName": "Номи пурра",
+    "address": "Суроға",
+    "apartment": "Хонаи иловагӣ (ихтиёрӣ)",
+    "city": "Шаҳр",
+    "postalCode": "Индекс",
+    "country": "Кишвар",
+    "continue": "Идома ба пардохт",
+    "preparing": "Тайёр кардан...",
+    "payment": "Пардохт",
+    "payNow": "Акнун пардохт кунед",
+    "processing": "Коркард...",
+    "orderSummary": "Хулосаи фармоиш",
+    "total": "Ҷамъи кул",
+    "emptyCart": "Сабади шумо холӣ аст.",
+    "browseProducts": "Маҳсулотро бинед →"
+  },
+  "auth": {
+    "login": {
+      "title": "Хуш омадед",
+      "subtitle": "Ба ҳисоби Naqshlab ворид шавед",
+      "email": "Почтаи электронӣ",
+      "password": "Рамз",
+      "submit": "Воридшавӣ",
+      "submitting": "Воридшавӣ...",
+      "noAccount": "Ҳисоб надоред?",
+      "createOne": "Сохтан",
+      "registered": "Ҳисоб сохта шуд! Ворид шавед."
+    },
+    "register": {
+      "title": "Ҳисоб сохтан",
+      "subtitle": "Ба Naqshlab ворид шавед то харид оғоз кунед",
+      "name": "Ном",
+      "email": "Почтаи электронӣ",
+      "password": "Рамз",
+      "submit": "Ҳисоб сохтан",
+      "submitting": "Сохтан...",
+      "hasAccount": "Аллакай ҳисоб доред?",
+      "signIn": "Воридшавӣ"
+    }
+  },
+  "admin": {
+    "dashboard": "Лавҳаи идоракунӣ",
+    "products": "Маҳсулот",
+    "orders": "Фармоишҳо",
+    "viewStore": "Дидани мағоза",
+    "stats": {
+      "totalOrders": "Ҳамаи фармоишҳо",
+      "pending": "Интизор",
+      "revenue": "Даромад",
+      "products": "Маҳсулот",
+      "allTime": "Ҳамаи вақт",
+      "needsAction": "Таваҷҷуҳ лозим",
+      "exclCancelled": "Бидуни бекоршуда",
+      "inCatalog": "Дар каталог"
+    },
+    "quickLinks": {
+      "addProduct": "Маҳсулот илова кунед",
+      "addProductDesc": "Рӯйхати нави маҳсулот сохтан",
+      "pendingOrders": "Фармоишҳои интизор",
+      "pendingOrdersDesc": "{count} фармоиш таваҷҷуҳ лозим дорад"
+    },
+    "productsPage": {
+      "catalog": "Каталог",
+      "newProduct": "Маҳсулоти нав",
+      "name": "Ном",
+      "category": "Категория",
+      "price": "Нарх",
+      "variants": "Вариантҳо",
+      "customizable": "Фармоишпазир",
+      "yes": "Бале",
+      "no": "Не",
+      "edit": "Таҳрир",
+      "noProducts": "Маҳсулотҳо нест",
+      "createFirst": "Аввалин маҳсулотро сохтан"
+    },
+    "ordersPage": {
+      "management": "Идоракунӣ",
+      "all": "Ҳама",
+      "customer": "Муштарӣ",
+      "date": "Сана",
+      "items": "Ашё",
+      "total": "Ҷамъ",
+      "status": "Вазъият",
+      "view": "Дидан",
+      "noOrders": "Фармоиш ёфт нашуд"
+    },
+    "orderDetail": {
+      "backToOrders": "Фармоишҳо",
+      "orderDetail": "Тафсилоти фармоиш",
+      "customer": "Муштарӣ",
+      "items": "Ашё",
+      "shippingAddress": "Суроғаи таҳвил",
+      "orderSummary": "Хулосаи фармоиш",
+      "subtotal": "Маблағи умумӣ",
+      "total": "Ҷамъи кул",
+      "updateStatus": "Навсозии вазъият"
+    }
+  }
+}
