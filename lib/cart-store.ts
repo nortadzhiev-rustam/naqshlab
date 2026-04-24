@@ -26,9 +26,16 @@ type CartStore = {
 };
 
 function buildId(item: Omit<CartItem, "id">) {
-  return [item.productId, item.variantId ?? "", item.presetDesignId ?? ""].join(
-    ":"
-  );
+  const customizationKey = item.customizationData
+    ? JSON.stringify(item.customizationData)
+    : "";
+
+  return [
+    item.productId,
+    item.variantId ?? "",
+    item.presetDesignId ?? "",
+    customizationKey,
+  ].join(":");
 }
 
 export const useCartStore = create<CartStore>()(

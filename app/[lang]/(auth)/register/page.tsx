@@ -6,6 +6,7 @@ import { register } from "@/lib/actions/auth";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect } from "react";
+import { naqshlabLogo } from "@/lib/brand-assets";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -23,7 +24,25 @@ export default function RegisterPage() {
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <Link href={`/${lang}`} className="flex items-center gap-2">
-            <Image src="/naqshlab.png" alt="Naqshlab" width={110} height={36} className="dark:brightness-0 dark:invert" />
+            <span className="relative inline-flex items-center justify-center w-[150px] h-[70px]">
+                       <Image
+                         src="/ornament.png"
+                         alt=""
+                         width={70}
+                         height={70}
+                         className="absolute top-1/6 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin opacity-80 group-hover:opacity-100 transition-opacity"
+                         style={{ animationDuration: "14s" }}
+                         aria-hidden="true"
+                       />
+                       <Image
+                         src={naqshlabLogo}
+                         alt="Naqshlab"
+                         width={170}
+                         height={90}
+                         className="relative z-10"
+                         priority
+                       />
+                     </span>
           </Link>
         </div>
 

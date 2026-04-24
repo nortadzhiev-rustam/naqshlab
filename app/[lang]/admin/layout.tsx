@@ -3,6 +3,7 @@ import Image from "next/image";
 import { LayoutDashboard, Package, ShoppingBag, ExternalLink } from "lucide-react";
 import { getDictionary, hasLocale, type Locale } from "@/app/[lang]/dictionaries";
 import { notFound } from "next/navigation";
+import { naqshlabLogo } from "@/lib/brand-assets";
 
 export default async function AdminLayout({
   children,
@@ -24,7 +25,25 @@ export default async function AdminLayout({
       <aside className="w-60 shrink-0 flex flex-col bg-zinc-950 dark:bg-black text-zinc-100">
         {/* Logo area */}
         <div className="flex h-16 items-center gap-3 px-5 border-b border-zinc-800">
-          <Image src="/naqshlab.png" alt="Naqshlab" width={80} height={26} className="brightness-0 invert opacity-90" />
+           <span className="relative inline-flex mt-2 items-center justify-center w-[100px] h-[30px]">
+                      <Image
+                        src="/ornament.png"
+                        alt=""
+                        width={40}
+                        height={40}
+                        className="absolute top-1/8 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin opacity-80 group-hover:opacity-100 transition-opacity"
+                        style={{ animationDuration: "14s" }}
+                        aria-hidden="true"
+                      />
+                      <Image
+                        src={naqshlabLogo}
+                        alt="Naqshlab"
+                        width={100}
+                        height={30}
+                        className="relative z-10"
+                        priority
+                      />
+                    </span>
           <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded px-1.5 py-0.5">
             Admin
           </span>

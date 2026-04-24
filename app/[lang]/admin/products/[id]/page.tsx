@@ -44,11 +44,13 @@ export default async function EditProductPage({
           basePrice: Number(product.basePrice),
           category: product.category,
           isCustomizable: product.isCustomizable,
+          images: product.images ?? [],
           variants: (product.variants ?? []).map((v) => ({
             id: v.id,
             label: v.label,
             priceModifier: Number(v.priceModifier),
             stock: v.stock,
+            imageUrl: v.imageUrl ?? null,
           })),
         }}
       />

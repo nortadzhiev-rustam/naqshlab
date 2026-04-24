@@ -113,7 +113,8 @@ All monetary values are **floats** representing the amount in the currency unit 
       "productId":     "prod_abc123",
       "label":         "Small",
       "priceModifier": 0.00,
-      "stock":         50
+      "stock":         50,
+      "imageUrl":      "https://naqshlab.test/storage/products/small.jpg"
     }
   ],
   "presetDesigns": [
@@ -406,9 +407,12 @@ Add a variant to a product.
 {
   "label":         "Small",
   "priceModifier": 0.00,
-  "stock":         50
+  "stock":         50,
+  "imageUrl":      "https://naqshlab.test/storage/products/small.jpg"
 }
 ```
+
+`imageUrl` is optional. When provided it should be one of the product's existing `images` URLs.
 
 **Success response:** `201 Created`
 ```json
@@ -417,7 +421,8 @@ Add a variant to a product.
   "productId":     "prod_abc123",
   "label":         "Small",
   "priceModifier": 0.00,
-  "stock":         50
+  "stock":         50,
+  "imageUrl":      "https://naqshlab.test/storage/products/small.jpg"
 }
 ```
 

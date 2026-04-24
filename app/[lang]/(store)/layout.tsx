@@ -5,6 +5,7 @@ import Image from "next/image";
 import { getDictionary, hasLocale, type Locale } from "@/app/[lang]/dictionaries";
 import { notFound } from "next/navigation";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { naqshlabLogo } from "@/lib/brand-assets";
 
 export default async function StoreLayout({
   children,
@@ -39,7 +40,7 @@ export default async function StoreLayout({
                              aria-hidden="true"
                            />
                            <Image
-                             src="/naqshlab.png"
+                             src={naqshlabLogo}
                              alt="Naqshlab"
                              width={120}
                              height={60}

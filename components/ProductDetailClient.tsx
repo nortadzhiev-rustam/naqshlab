@@ -1,14 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useCartStore } from "@/lib/cart-store";
-import { DesignEditor } from "@/components/DesignEditor";
-import { ShoppingCart, Check } from "lucide-react";
+import { ShoppingCart, Check, ArrowRight, Cuboid } from "lucide-react";
 
 type Variant = {
   id: string;
   label: string;
   priceModifier: number;
+  imageUrl?: string | null;
 };
 
 type PresetDesign = {
@@ -36,24 +37,31 @@ type ProductDetailClientProps = {
     selectDesign: string;
     chooseDesign: string;
     customize: string;
+    openStudio: string;
+    studioTitle: string;
+    studioDescription: string;
+    preview3d: string;
   };
+  onVariantImageChange?: (url: string | null) => void;
 };
 
-export function ProductDetailClient({ product, dict }: ProductDetailClientProps) {
+export function ProductDetailClient({ lang, product, dict, onVariantImageChange }: ProductDetailClientProps) {
   const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(
     product.variants[0]?.id
   );
   const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>(
     product.presetDesigns[0]?.id
   );
-  const [customizationData, setCustomizationData] = useState<object | undefined>();
-  const [mode, setMode] = useState<"preset" | "custom">(
-    product.isCustomizable ? "preset" : "preset"
-  );
   const [added, setAdded] = useState(false);
 
-  const addItem = useCartStore((s) => s.addItem);
+  function handleSelectVariant(variantId: string) {
+    setSelectedVariantId(variantId);
+    const v = product.variants.find((v) => v.id === variantId);
+    const img = v?.imageUrl ?? null;
+    onVariantImageChange?.(img);
+  }
 
+  const addItem = useCartStore((s) => s.addItem);
   const selectedVariant = product.variants.find((v) => v.id === selectedVariantId);
   const unitPrice = product.basePrice + (selectedVariant?.priceModifier ?? 0);
   const selectedPreset = product.presetDesigns.find((d) => d.id === selectedPresetId);
@@ -65,9 +73,8 @@ export function ProductDetailClient({ product, dict }: ProductDetailClientProps)
       productImage: product.images[0] ?? "",
       variantId: selectedVariantId,
       variantLabel: selectedVariant?.label,
-      presetDesignId: mode === "preset" ? selectedPresetId : undefined,
-      presetDesignImage: mode === "preset" ? selectedPreset?.imageUrl : undefined,
-      customizationData: mode === "custom" ? customizationData : undefined,
+      presetDesignId: selectedPresetId,
+      presetDesignImage: selectedPreset?.imageUrl,
       quantity: 1,
       unitPrice,
     });
@@ -77,34 +84,32 @@ export function ProductDetailClient({ product, dict }: ProductDetailClientProps)
 
   return (
     <div className="flex flex-col gap-8">
-      {/* Mode toggle (only for customizable products) */}
-      {product.isCustomizable && (
-        <div className="flex gap-2">
-          <button
-            onClick={() => setMode("preset")}
-            className={`rounded-full px-4 py-2 text-sm font-semibold border transition-all ${
-              mode === "preset"
-                ? "bg-zinc-900 text-white border-zinc-900 dark:bg-amber-500 dark:text-zinc-900 dark:border-amber-500"
-                : "border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:border-zinc-400"
-            }`}
-          >
-            {dict?.chooseDesign ?? "Choose Design"}
-          </button>
-          <button
-            onClick={() => setMode("custom")}
-            className={`rounded-full px-4 py-2 text-sm font-semibold border transition-all ${
-              mode === "custom"
-                ? "bg-zinc-900 text-white border-zinc-900 dark:bg-amber-500 dark:text-zinc-900 dark:border-amber-500"
-                : "border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:border-zinc-400"
-            }`}
-          >
-            {dict?.customize ?? "Customize"}
-          </button>
+      {product.isCustomizable && lang && (
+        <div className="rounded-[2rem] border border-zinc-200/80 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.16),_transparent_35%),linear-gradient(180deg,_rgba(255,255,255,0.96),_rgba(250,250,249,0.92))] p-5 shadow-sm dark:border-zinc-800 dark:bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.12),_transparent_30%),linear-gradient(180deg,_rgba(24,24,27,0.95),_rgba(9,9,11,0.96))]">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
+                <Cuboid className="h-3.5 w-3.5" /> {dict?.preview3d ?? "3D Preview"}
+              </div>
+              <h2 className="text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
+                {dict?.studioTitle ?? "Customization Studio"}
+              </h2>
+              <p className="max-w-xl text-sm leading-6 text-zinc-600 dark:text-zinc-300">
+                {dict?.studioDescription ?? "Open the standalone studio to place artwork, switch variants, and inspect the product in a live angled preview before checkout."}
+              </p>
+            </div>
+            <Link
+              href={`/${lang}/studio/${product.slug}`}
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-zinc-950 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-zinc-800 dark:bg-amber-400 dark:text-zinc-950 dark:hover:bg-amber-300"
+            >
+              {dict?.openStudio ?? "Open Studio"}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       )}
 
-      {/* Preset designs */}
-      {mode === "preset" && product.presetDesigns.length > 0 && (
+      {!product.isCustomizable && product.presetDesigns.length > 0 && (
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">{dict?.selectDesign ?? "Select Design"}</p>
           <div className="flex flex-wrap gap-3">
@@ -133,23 +138,15 @@ export function ProductDetailClient({ product, dict }: ProductDetailClientProps)
         </div>
       )}
 
-      {/* Custom editor */}
-      {mode === "custom" && product.isCustomizable && (
-        <DesignEditor
-          backgroundImage={product.images[0]}
-          onChange={setCustomizationData}
-        />
-      )}
-
       {/* Variants */}
-      {product.variants.length > 0 && (
+      {product.variants.length > 0 && !product.isCustomizable && (
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">{dict?.options ?? "Options"}</p>
           <div className="flex flex-wrap gap-2">
             {product.variants.map((variant) => (
               <button
                 key={variant.id}
-                onClick={() => setSelectedVariantId(variant.id)}
+                onClick={() => handleSelectVariant(variant.id)}
                 className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all ${
                   selectedVariantId === variant.id
                     ? "border-amber-400 bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400"
@@ -171,24 +168,34 @@ export function ProductDetailClient({ product, dict }: ProductDetailClientProps)
       {/* Price + Add to cart */}
       <div className="flex items-center gap-4">
         <p className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">${unitPrice.toFixed(2)}</p>
-        <button
-          onClick={handleAddToCart}
-          className={`flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-all ${
-            added
-              ? "bg-emerald-500 text-white"
-              : "bg-zinc-900 text-white hover:bg-zinc-700 dark:bg-amber-500 dark:text-zinc-900 dark:hover:bg-amber-400 shadow-sm"
-          }`}
-        >
-          {added ? (
-            <>
-              <Check className="h-4 w-4" /> {dict?.added ?? "Added!"}
-            </>
-          ) : (
-            <>
-              <ShoppingCart className="h-4 w-4" /> {dict?.addToCart ?? "Add to Cart"}
-            </>
-          )}
-        </button>
+        {product.isCustomizable && lang ? (
+          <Link
+            href={`/${lang}/studio/${product.slug}`}
+            className="flex items-center gap-2 rounded-full bg-zinc-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-zinc-700 dark:bg-amber-500 dark:text-zinc-900 dark:hover:bg-amber-400 shadow-sm"
+          >
+            {dict?.openStudio ?? "Open Studio"}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        ) : (
+          <button
+            onClick={handleAddToCart}
+            className={`flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-all ${
+              added
+                ? "bg-emerald-500 text-white"
+                : "bg-zinc-900 text-white hover:bg-zinc-700 dark:bg-amber-500 dark:text-zinc-900 dark:hover:bg-amber-400 shadow-sm"
+            }`}
+          >
+            {added ? (
+              <>
+                <Check className="h-4 w-4" /> {dict?.added ?? "Added!"}
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="h-4 w-4" /> {dict?.addToCart ?? "Add to Cart"}
+              </>
+            )}
+          </button>
+        )}
       </div>
     </div>
   );

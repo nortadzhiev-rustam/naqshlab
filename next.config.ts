@@ -11,6 +11,22 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "**.ufs.sh", // Uploadthing CDN (alternate)
       },
+      {
+        protocol: "http",
+        hostname: "127.0.0.1",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
+      {
+        protocol: "http",
+        hostname: "naqshlab.test",
+      },
+      {
+        protocol: "https",
+        hostname: "naqshlab.test",
+      },
     ],
   },
 };

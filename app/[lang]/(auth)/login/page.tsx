@@ -6,6 +6,7 @@ import { login } from "@/lib/actions/auth";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, Suspense } from "react";
+import { naqshlabLogo } from "@/lib/brand-assets";
 
 function LoginForm({ lang }: { lang: string }) {
   const router = useRouter();
@@ -28,17 +29,17 @@ function LoginForm({ lang }: { lang: string }) {
             <Image
               src="/ornament.png"
               alt=""
-              width={100}
-              height={100}
+              width={70}
+              height={70}
               className="absolute top-1/6 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin opacity-80 group-hover:opacity-100 transition-opacity"
               style={{ animationDuration: "14s" }}
               aria-hidden="true"
             />
             <Image
-              src="/naqshlab.png"
+              src={naqshlabLogo}
               alt="Naqshlab"
-              width={130}
-              height={70}
+              width={170}
+              height={90}
               className="relative z-10"
               priority
             />

@@ -16,6 +16,7 @@ export type ProductVariant = {
   label: string;
   priceModifier: number;
   stock: number;
+  imageUrl?: string | null;
 };
 
 export type PresetDesign = {

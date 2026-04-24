@@ -4,6 +4,7 @@ import { CartDrawer } from "@/components/CartDrawer";
 import { Package, LayoutDashboard, LogIn, UserPlus } from "lucide-react";
 import Image from "next/image";
 import type { Dictionary, Locale } from "@/app/[lang]/dictionaries";
+import { naqshlabLogo } from "@/lib/brand-assets";
 
 export async function Navbar({ lang, dict }: { lang: Locale; dict: Dictionary }) {
   const session = await auth();
@@ -30,7 +31,7 @@ export async function Navbar({ lang, dict }: { lang: Locale; dict: Dictionary })
                 aria-hidden="true"
               />
               <Image
-                src="/naqshlab.png"
+                src={naqshlabLogo}
                 alt="Naqshlab"
                 width={88}
                 height={28}

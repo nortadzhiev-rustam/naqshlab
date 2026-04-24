@@ -36,6 +36,11 @@
     "selectDesign": "Select Design",
     "chooseDesign": "Choose Design",
     "customize": "Customize",
+    "openStudio": "Open Studio",
+    "studioTitle": "Customization Studio",
+    "studioDescription": "Build your print-ready design, switch variants, and inspect it inside a live angled preview before checkout.",
+    "backToProduct": "Back to Product",
+    "preview3d": "3D Preview",
     "from": "from"
   },
   "orders": {

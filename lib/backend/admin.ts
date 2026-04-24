@@ -55,7 +55,7 @@ export async function updateAdminProduct(
 export async function addAdminProductVariant(
   userId: string,
   productId: string,
-  payload: { label: string; priceModifier: number; stock: number }
+  payload: { label: string; priceModifier: number; stock: number; imageUrl?: string }
 ) {
   return apiRequest(`/products/${productId}/variants`, {
     method: "POST",
