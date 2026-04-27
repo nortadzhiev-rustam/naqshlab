@@ -1,0 +1,57 @@
+<svg width="900" height="600" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" stroke="#111" stroke-width="2">
+
+    <!-- Outer collar curve -->
+    <path d="M150 120 Q450 40 750 120" />
+
+    <!-- Inner collar curve -->
+    <path d="M180 140 Q450 70 720 140" />
+
+    <!-- Stitching (double line effect) -->
+    <path d="M190 150 Q450 85 710 150" stroke-dasharray="4,4"/>
+    <path d="M200 160 Q450 100 700 160" stroke-dasharray="4,4"/>
+
+    <!-- Fabric shading (subtle fill) -->
+    <path d="M150 120 Q450 40 750 120 L750 260 Q450 200 150 260 Z" fill="#f5f5f5" stroke="none"/>
+
+    <!-- Neck label container (dashed box) -->
+    <rect x="350" y="260" width="200" height="180"
+          stroke="#333"
+          stroke-dasharray="8,6"
+          fill="#ffffff"/>
+
+    <!-- Label text: Size -->
+    <text x="450" y="300"
+          font-size="26"
+          font-weight="bold"
+          text-anchor="middle"
+          fill="#111">
+      L
+    </text>
+
+    <!-- Material -->
+    <text x="450" y="330"
+          font-size="14"
+          text-anchor="middle"
+          fill="#111">
+      100% Cotton
+    </text>
+
+    <!-- Origin -->
+    <text x="450" y="355"
+          font-size="12"
+          text-anchor="middle"
+          fill="#111">
+      Made in Tajikistan
+    </text>
+
+    <!-- Care icons (simplified placeholders) -->
+    <g transform="translate(390,370) scale(0.8)">
+      <rect x="0" y="0" width="20" height="20"/>
+      <rect x="30" y="0" width="20" height="20"/>
+      <rect x="60" y="0" width="20" height="20"/>
+      <rect x="90" y="0" width="20" height="20"/>
+    </g>
+
+  </g>
+</svg>

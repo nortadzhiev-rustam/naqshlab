@@ -14,10 +14,24 @@ import {
   Trash2,
   ChevronDown,
   ChevronRight,
+  Box,
 } from "lucide-react";
 import { DesignEditor, type DesignEditorHandle } from "@/components/DesignEditor";
-import { Studio3DPreview, ClientMugCanvas } from "@/components/Studio3DPreview";
+import {
+  Studio3DPreview,
+  ClientApparelCanvas,
+  ClientMugCanvas,
+  DEFAULT_APPAREL_MODEL_PATH,
+} from "@/components/Studio3DPreview";
+import {
+  APPAREL_EDITOR_SURFACES,
+  APPAREL_EDITOR_CANVAS_HEIGHT,
+  APPAREL_EDITOR_CANVAS_WIDTH,
+  DEFAULT_APPAREL_SURFACE_ID,
+  getApparelEditorSurface,
+} from "@/lib/apparel-editor";
 import { useCartStore } from "@/lib/cart-store";
+import { MUG_CANVAS_HEIGHT, MUG_CANVAS_WIDTH } from "@/lib/mug-wrap";
 
 // Color label to CSS colour mapping
 const COLOR_MAP: Record<string, string> = {
@@ -89,31 +103,6 @@ type ProductStudioClientProps = {
 
 type ActiveTool = "upload" | "text" | "templates" | null;
 
-function MiniProductPreview({
-  previewImage,
-  fallbackImage,
-}: {
-  previewImage?: string;
-  fallbackImage?: string;
-}) {
-  return (
-    <div className="relative h-full w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-      {fallbackImage ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={fallbackImage} alt="" className="h-full w-full object-contain" />
-      ) : null}
-      {previewImage ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={previewImage}
-          alt="Design preview"
-          className="absolute inset-0 h-full w-full object-contain"
-        />
-      ) : null}
-    </div>
-  );
-}
-
 function SidebarTool({
   icon,
   label,
@@ -151,14 +140,26 @@ export function ProductStudioClient({ lang, product, dict }: ProductStudioClient
   const [selectedPresetId, setSelectedPresetId] = useState<string | undefined>(
     product.presetDesigns[0]?.id
   );
-  const [customizationData, setCustomizationData] = useState<object | undefined>();
-  const [previewImage, setPreviewImage] = useState<string | undefined>();
+  const [editorCustomizationData, setEditorCustomizationData] = useState<object | undefined>();
+  const [editorPreviewImage, setEditorPreviewImage] = useState<string | undefined>();
+  const [selectedApparelSurfaceId, setSelectedApparelSurfaceId] =
+    useState(DEFAULT_APPAREL_SURFACE_ID);
+  const [apparelSurfaceData, setApparelSurfaceData] = useState<Record<string, object | undefined>>(
+    {}
+  );
+  const [apparelSurfacePreviewImages, setApparelSurfacePreviewImages] = useState<
+    Record<string, string | undefined>
+  >({});
+  const [paintedPreviewImage, setPaintedPreviewImage] = useState<string | undefined>();
   const [generatedMockups, setGeneratedMockups] = useState<string[]>([]);
   const [isGeneratingMockups, setIsGeneratingMockups] = useState(false);
   const [added, setAdded] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const [showMiniPreview, setShowMiniPreview] = useState(true);
+  const [paintMode, setPaintMode] = useState(false);
+  const [paintBrushColor, setPaintBrushColor] = useState("#111827");
+  const [paintBrushSize, setPaintBrushSize] = useState(22);
 
   const editorRef = useRef<DesignEditorHandle>(null);
   const addItem = useCartStore((state) => state.addItem);
@@ -177,13 +178,61 @@ export function ProductStudioClient({ lang, product, dict }: ProductStudioClient
       ),
     [selectedVariant?.imageUrl, product.images]
   );
+  const isMug = product.category.toUpperCase() === "MUG";
+  const isApparel = product.category.toUpperCase() === "APPAREL";
+  const isEditView = mode === "edit";
+  const isPreviewView = mode === "preview";
+  const activeApparelSurface = isApparel
+    ? getApparelEditorSurface(selectedApparelSurfaceId)
+    : null;
+  const editorCanvasWidth = isMug
+    ? MUG_CANVAS_WIDTH
+    : isApparel
+      ? APPAREL_EDITOR_CANVAS_WIDTH
+      : 520;
+  const editorCanvasHeight = isMug
+    ? MUG_CANVAS_HEIGHT
+    : isApparel
+      ? APPAREL_EDITOR_CANVAS_HEIGHT
+      : 520;
+  const editorBackgroundImage = isMug
+    ? undefined
+    : isApparel
+      ? activeApparelSurface?.backgroundImage
+      : canvasBg;
+  const activeSurfacePreviewImage = isApparel
+    ? apparelSurfacePreviewImages[selectedApparelSurfaceId]
+    : paintedPreviewImage ?? editorPreviewImage;
+  const previewImage = activeSurfacePreviewImage;
   const shouldGenerateMockups =
-    mode === "preview" && Boolean(previewImage) && previewMockups.length > 0;
+    !isMug && !isApparel && mode === "preview" && Boolean(previewImage) && previewMockups.length > 0;
   const activeGeneratedMockups = shouldGenerateMockups ? generatedMockups : [];
   const displayMockups =
-    activeGeneratedMockups.length > 0 ? activeGeneratedMockups : previewMockups;
+    isApparel ? [] : activeGeneratedMockups.length > 0 ? activeGeneratedMockups : previewMockups;
   const unitPrice = product.basePrice + (selectedVariant?.priceModifier ?? 0);
-  const isMug = product.category.toUpperCase() === "MUG";
+  const customizationData = useMemo(() => {
+    if (isApparel) {
+      return {
+        surfaces: apparelSurfaceData,
+        activeSurfaceId: selectedApparelSurfaceId,
+      };
+    }
+
+    if (!paintedPreviewImage) {
+      return editorCustomizationData;
+    }
+
+    if (editorCustomizationData) {
+      return {
+        editor: editorCustomizationData,
+        mugPaintTextureDataUrl: paintedPreviewImage,
+      };
+    }
+
+    return {
+      mugPaintTextureDataUrl: paintedPreviewImage,
+    };
+  }, [apparelSurfaceData, editorCustomizationData, isApparel, paintedPreviewImage, selectedApparelSurfaceId]);
 
   useEffect(() => {
     if (!shouldGenerateMockups || !previewImage) {
@@ -237,6 +286,48 @@ export function ProductStudioClient({ lang, product, dict }: ProductStudioClient
 
   function toggleTool(tool: ActiveTool) {
     setActiveTool((prev) => (prev === tool ? null : tool));
+  }
+
+  function handleEditorChange(nextData: object) {
+    if (isApparel) {
+      setApparelSurfaceData((current) => ({
+        ...current,
+        [selectedApparelSurfaceId]: nextData,
+      }));
+      return;
+    }
+
+    setEditorCustomizationData(nextData);
+  }
+
+  function handleEditorPreviewChange(nextPreviewImage: string) {
+    if (isApparel) {
+      setApparelSurfacePreviewImages((current) => ({
+        ...current,
+        [selectedApparelSurfaceId]: nextPreviewImage,
+      }));
+      return;
+    }
+
+    setEditorPreviewImage(nextPreviewImage);
+
+    if (!isMug) {
+      return;
+    }
+
+    setPaintedPreviewImage((current) =>
+      current && current !== nextPreviewImage ? undefined : current
+    );
+    setPaintMode(false);
+  }
+
+  function handlePaintTextureCommit(nextPreviewImage: string) {
+    setPaintedPreviewImage(nextPreviewImage);
+  }
+
+  function clearPaintLayer() {
+    setPaintedPreviewImage(undefined);
+    setPaintMode(false);
   }
 
   function handleAddToCart() {
@@ -330,7 +421,7 @@ export function ProductStudioClient({ lang, product, dict }: ProductStudioClient
 
       {/* Body */}
       <div className="relative min-h-0 flex-1">
-        <div className={mode === "edit" ? "flex h-full" : "hidden h-full"}>
+        <div className={isEditView ? "flex h-full" : "hidden h-full"}>
             {/* Left sidebar */}
             <div className="flex w-[3.75rem] shrink-0 flex-col items-center gap-1 border-r border-zinc-200/80 bg-white/80 py-3 dark:border-zinc-800 dark:bg-zinc-950/80">
               <SidebarTool
@@ -410,154 +501,172 @@ export function ProductStudioClient({ lang, product, dict }: ProductStudioClient
               </div>
             )}
 
-            {/* Variant options panel (xl screens, shown when no tool panel is open) */}
-            {product.variants.length > 0 && activeTool === null && (
-              <div className="hidden w-52 shrink-0 overflow-y-auto border-r border-zinc-200/80 bg-white/95 p-4 shadow-md xl:block dark:border-zinc-800 dark:bg-zinc-950/95">
-                <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.22em] text-zinc-500">
-                  {dict?.options ?? "Options"}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {product.variants.map((variant) => {
-                    const color = getVariantColor(variant.label);
-                    const isSelected = selectedVariantId === variant.id;
-                    return color ? (
-                      <button
-                        key={variant.id}
-                        type="button"
-                        title={variant.label}
-                        onClick={() => setSelectedVariantId(variant.id)}
-                        className={`h-8 w-8 rounded-full border-2 transition-all ${
-                          isSelected
-                            ? "border-zinc-900 shadow-md dark:border-amber-400"
-                            : "border-zinc-200 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-500"
-                        }`}
-                        style={{
-                          backgroundColor: color,
-                          outline: color === "#ffffff" ? "1px solid #d4d4d8" : undefined,
-                        }}
-                      />
-                    ) : (
-                      <button
-                        key={variant.id}
-                        type="button"
-                        onClick={() => setSelectedVariantId(variant.id)}
-                        className={`rounded-full border px-3 py-1 text-xs font-semibold transition-all ${
-                          isSelected
-                            ? "border-zinc-950 bg-zinc-950 text-white dark:border-amber-400 dark:bg-amber-400 dark:text-zinc-950"
-                            : "border-zinc-200 text-zinc-600 hover:border-zinc-400 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-zinc-500"
-                        }`}
-                      >
-                        {variant.label}
-                        {variant.priceModifier > 0 && (
-                          <span className="ml-1 opacity-60">
-                            (+${variant.priceModifier.toFixed(2)})
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
             {/* Canvas area */}
-            <div className="relative flex min-w-0 flex-1 items-center justify-center overflow-hidden">
-              {/* Undo / Redo / Delete floating bar */}
-              <div className="absolute bottom-5 left-1/2 z-10 flex -translate-x-1/2 items-center gap-0.5 rounded-xl border border-zinc-200/80 bg-white/95 px-1 py-1 shadow-lg backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-900/95">
-                <button
-                  type="button"
-                  onClick={() => editorRef.current?.undo()}
-                  disabled={!canUndo}
-                  title="Undo"
-                  className="rounded-lg p-2 text-zinc-600 transition-colors hover:bg-zinc-100 disabled:opacity-35 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            <div
+              className={`relative flex min-w-0 flex-1 overflow-hidden ${
+                isApparel ? "items-stretch gap-5 p-5" : "items-center justify-center"
+              }`}
+            >
+              <div className="relative flex min-w-0 flex-1 items-center justify-center overflow-hidden">
+                {/* Undo / Redo / Delete floating bar */}
+                <div
+                  className={`absolute left-1/2 z-10 flex -translate-x-1/2 items-center gap-0.5 rounded-xl border border-zinc-200/80 bg-white/95 px-1 py-1 shadow-lg backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-900/95 ${
+                    isApparel ? "bottom-20" : "bottom-5"
+                  }`}
                 >
-                  <RotateCcw className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => editorRef.current?.redo()}
-                  disabled={!canRedo}
-                  title="Redo"
-                  className="rounded-lg p-2 text-zinc-600 transition-colors hover:bg-zinc-100 disabled:opacity-35 dark:text-zinc-300 dark:hover:bg-zinc-800"
-                >
-                  <RotateCw className="h-4 w-4" />
-                </button>
-                <div className="mx-1 h-5 w-px bg-zinc-200 dark:bg-zinc-700" />
-                <button
-                  type="button"
-                  onClick={() => editorRef.current?.deleteSelected()}
-                  title="Delete selected"
-                  className="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950/40"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-
-              <DesignEditor
-                ref={editorRef}
-                width={isMug ? 720 : 520}
-                height={isMug ? 340 : 520}
-                backgroundImage={isMug ? undefined : canvasBg}
-                productCategory={product.category}
-                templates={product.presetDesigns}
-                selectedTemplateId={selectedPresetId}
-                onSelectTemplate={setSelectedPresetId}
-                onChange={setCustomizationData}
-                onPreviewChange={setPreviewImage}
-                hideBuiltinToolbar
-                onHistoryChange={(u, r) => {
-                  setCanUndo(u);
-                  setCanRedo(r);
-                }}
-              />
-
-              {/* Mini preview widget bottom-right */}
-              <div className="absolute bottom-5 right-5 w-44 overflow-hidden rounded-2xl border border-zinc-200/80 bg-white shadow-xl dark:border-zinc-700 dark:bg-zinc-900">
-                <div className="flex items-center justify-between border-b border-zinc-100 px-3 py-1.5 dark:border-zinc-800">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-500">
-                    3D Preview
-                  </span>
                   <button
                     type="button"
-                    onClick={() => setShowMiniPreview((p) => !p)}
-                    className="text-zinc-400 transition-colors hover:text-zinc-600 dark:hover:text-zinc-200"
+                    onClick={() => editorRef.current?.undo()}
+                    disabled={!canUndo}
+                    title="Undo"
+                    className="rounded-lg p-2 text-zinc-600 transition-colors hover:bg-zinc-100 disabled:opacity-35 dark:text-zinc-300 dark:hover:bg-zinc-800"
                   >
-                    {showMiniPreview ? (
-                      <ChevronDown className="h-3.5 w-3.5" />
-                    ) : (
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    )}
+                    <RotateCcw className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => editorRef.current?.redo()}
+                    disabled={!canRedo}
+                    title="Redo"
+                    className="rounded-lg p-2 text-zinc-600 transition-colors hover:bg-zinc-100 disabled:opacity-35 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                  >
+                    <RotateCw className="h-4 w-4" />
+                  </button>
+                  <div className="mx-1 h-5 w-px bg-zinc-200 dark:bg-zinc-700" />
+                  <button
+                    type="button"
+                    onClick={() => editorRef.current?.deleteSelected()}
+                    title="Delete selected"
+                    className="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950/40"
+                  >
+                    <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
-                {showMiniPreview && (
-                  <div className="h-36">
-                    {isMug ? (
-                      <ClientMugCanvas
-                        modelPath="/models/mug_pbr.glb"
-                        modelStyle="pbr"
-                        textureUrl={previewImage}
-                      />
-                    ) : (
-                      <MiniProductPreview
-                        previewImage={previewImage}
-                        fallbackImage={canvasBg ?? product.images[0]}
-                      />
+
+                <DesignEditor
+                  key={isApparel ? `apparel-${selectedApparelSurfaceId}` : product.id}
+                  ref={editorRef}
+                  width={editorCanvasWidth}
+                  height={editorCanvasHeight}
+                  backgroundImage={editorBackgroundImage}
+                  surfaceId={isApparel ? selectedApparelSurfaceId : undefined}
+                  initialScene={isApparel ? apparelSurfaceData[selectedApparelSurfaceId] : undefined}
+                  productCategory={product.category}
+                  templates={product.presetDesigns}
+                  selectedTemplateId={selectedPresetId}
+                  onSelectTemplate={setSelectedPresetId}
+                  onChange={handleEditorChange}
+                  onPreviewChange={handleEditorPreviewChange}
+                  hideBuiltinToolbar
+                  onHistoryChange={(u, r) => {
+                    setCanUndo(u);
+                    setCanRedo(r);
+                  }}
+                />
+
+                {isApparel ? (
+                  <div className="absolute bottom-5 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-full bg-white/90 px-2 py-2 shadow-lg backdrop-blur-sm dark:bg-zinc-900/90">
+                    {APPAREL_EDITOR_SURFACES.map((surface) => {
+                      const active = selectedApparelSurfaceId === surface.id;
+                      return (
+                        <button
+                          key={surface.id}
+                          type="button"
+                          onClick={() => setSelectedApparelSurfaceId(surface.id)}
+                          className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                            active
+                              ? "bg-zinc-800 text-white dark:bg-white dark:text-zinc-950"
+                              : "bg-white text-zinc-600 hover:bg-zinc-100 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                          }`}
+                        >
+                          {surface.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : null}
+
+                {/* Mini preview widget bottom-right */}
+                {isMug ? (
+                  <div className="absolute bottom-5 left-5 z-10 w-44 overflow-hidden rounded-2xl border border-zinc-200/80 bg-white shadow-xl dark:border-zinc-700 dark:bg-zinc-900">
+                    <div className="flex items-center justify-between border-b border-zinc-100 px-3 py-1.5 dark:border-zinc-800">
+                      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-500">
+                        3D Preview
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setShowMiniPreview((p) => !p)}
+                        className="text-zinc-400 transition-colors hover:text-zinc-600 dark:hover:text-zinc-200"
+                      >
+                        {showMiniPreview ? (
+                          <ChevronDown className="h-3.5 w-3.5" />
+                        ) : (
+                          <ChevronRight className="h-3.5 w-3.5" />
+                        )}
+                      </button>
+                    </div>
+                    {showMiniPreview && (
+                      <div className="h-36">
+                        <ClientMugCanvas
+                          modelPath="/models/mug.glb"
+                          textureUrl={previewImage}
+                        />
+                      </div>
                     )}
                   </div>
-                )}
+                ) : null}
               </div>
+
+              {isApparel ? (
+                <div className="hidden w-[360px] shrink-0 lg:block">
+                  <div className="flex h-full flex-col overflow-hidden rounded-[2rem] border border-zinc-200/80 bg-white/92 shadow-[0_26px_60px_-34px_rgba(15,23,42,0.38)] dark:border-zinc-700 dark:bg-zinc-950/90">
+                    <div className="flex items-center justify-between border-b border-zinc-200/80 px-4 py-3 dark:border-zinc-800">
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-zinc-500">
+                          Live 3D Model
+                        </p>
+                        <p className="mt-1 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                          Uploads apply here immediately
+                        </p>
+                      </div>
+                      <span className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3 py-1 text-[11px] font-medium text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                        <Box className="h-3.5 w-3.5" />
+                        {activeApparelSurface?.label ?? "Front side"}
+                      </span>
+                    </div>
+                    <div className="min-h-0 flex-1 bg-black">
+                      <ClientApparelCanvas
+                        modelPath={DEFAULT_APPAREL_MODEL_PATH}
+                        textureUrl={activeSurfacePreviewImage}
+                        surfaceId={selectedApparelSurfaceId}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </div>
         </div>
 
-        <div className={mode === "preview" ? "flex min-h-0 h-full w-full" : "hidden min-h-0 h-full w-full"}>
+        <div className={isPreviewView ? "flex min-h-0 h-full w-full" : "hidden min-h-0 h-full w-full"}>
             <div className="flex min-w-0 flex-1 items-center justify-center overflow-y-auto p-6">
               <div className="w-full max-w-xl">
                 <Studio3DPreview
                   productName={product.name}
+                  productCategory={product.category}
+                  apparelSurfaceId={isApparel ? selectedApparelSurfaceId : undefined}
                   variantLabel={selectedVariant?.label}
-                  previewImage={activeGeneratedMockups.length > 0 ? undefined : previewImage}
+                  previewImage={previewImage}
                   mockupImages={displayMockups}
                   isGeneratingMockups={shouldGenerateMockups && isGeneratingMockups}
+                  paintMode={paintMode}
+                  brushColor={paintBrushColor}
+                  brushSize={paintBrushSize}
+                  hasPaintLayer={Boolean(paintedPreviewImage)}
+                  onPaintModeChange={setPaintMode}
+                  onBrushColorChange={setPaintBrushColor}
+                  onBrushSizeChange={setPaintBrushSize}
+                  onClearPaint={clearPaintLayer}
+                  onPaintTextureCommit={handlePaintTextureCommit}
                 />
               </div>
             </div>
@@ -565,6 +674,33 @@ export function ProductStudioClient({ lang, product, dict }: ProductStudioClient
             {/* Right options panel */}
             <div className="w-72 shrink-0 overflow-y-auto border-l border-zinc-200/80 bg-white/95 dark:border-zinc-800 dark:bg-zinc-950/95">
               <div className="space-y-6 p-6">
+                {isApparel ? (
+                  <div>
+                    <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.22em] text-zinc-500">
+                      Placement
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {APPAREL_EDITOR_SURFACES.map((surface) => {
+                        const active = selectedApparelSurfaceId === surface.id;
+                        return (
+                          <button
+                            key={surface.id}
+                            type="button"
+                            onClick={() => setSelectedApparelSurfaceId(surface.id)}
+                            className={`rounded-full border px-3 py-1 text-xs font-semibold transition-all ${
+                              active
+                                ? "border-zinc-950 bg-zinc-950 text-white dark:border-amber-400 dark:bg-amber-400 dark:text-zinc-950"
+                                : "border-zinc-200 text-zinc-600 hover:border-zinc-400 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-zinc-500"
+                            }`}
+                          >
+                            {surface.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : null}
+
                 {product.variants.length > 0 && (
                   <div>
                     <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.22em] text-zinc-500">

@@ -1,0 +1,43 @@
+<svg width="900" height="900" viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="#111" stroke-width="2" fill="none">
+
+    <!-- Body shape (more natural) -->
+    <path d="
+      M300 120
+      Q350 90 400 90
+      L500 90
+      Q550 90 600 120
+      L680 200
+      Q710 240 680 270
+      L620 260
+      L590 200
+      L590 700
+      Q590 740 550 750
+      L350 750
+      Q310 740 310 700
+      L310 200
+      L280 260
+      L220 270
+      Q190 240 220 200
+      Z" />
+
+    <!-- Ribbed collar -->
+    <ellipse cx="450" cy="130" rx="70" ry="30"/>
+    <ellipse cx="450" cy="135" rx="50" ry="20"/>
+
+    <!-- Shoulder seams -->
+    <line x1="300" y1="120" x2="310" y2="200"/>
+    <line x1="600" y1="120" x2="590" y2="200"/>
+
+    <!-- Sleeve hems -->
+    <path d="M220 270 Q260 300 310 280"/>
+    <path d="M680 270 Q640 300 590 280"/>
+
+    <!-- Bottom hem -->
+    <line x1="320" y1="740" x2="580" y2="740"/>
+
+    <!-- Print area -->
+    <rect x="340" y="260" width="220" height="300" stroke-dasharray="8,6"/>
+
+  </g>
+</svg>

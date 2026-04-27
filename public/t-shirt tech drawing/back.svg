@@ -1,0 +1,31 @@
+<svg width="900" height="900" viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="#111" stroke-width="2" fill="none">
+
+    <!-- Same body -->
+    <path d="
+      M300 120
+      Q350 90 400 90
+      L500 90
+      Q550 90 600 120
+      L680 200
+      Q710 240 680 270
+      L620 260
+      L590 200
+      L590 700
+      Q590 740 550 750
+      L350 750
+      Q310 740 310 700
+      L310 200
+      L280 260
+      L220 270
+      Q190 240 220 200
+      Z" />
+
+    <!-- Back collar seam -->
+    <path d="M380 130 Q450 170 520 130"/>
+
+    <!-- Print area -->
+    <rect x="340" y="260" width="220" height="300" stroke-dasharray="8,6"/>
+
+  </g>
+</svg>
