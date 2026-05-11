@@ -512,7 +512,7 @@ function InnerEditor({
   }, [height, visibleCanvasWidth]);
 
   useEffect(() => {
-    let cancelled = false;
+    let isCancelled = false;
 
     async function init() {
       setReady(false);
@@ -526,7 +526,7 @@ function InnerEditor({
           ? backgroundImage
           : `/api/image-proxy?url=${encodeURIComponent(backgroundImage)}`;
         const elem = await ensureImageElem(backgroundSrc);
-        if (cancelled) return;
+        if (isCancelled) return;
         const scale = Math.max(width / elem.naturalWidth, height / elem.naturalHeight);
         const w = elem.naturalWidth * scale;
         const h = elem.naturalHeight * scale;
@@ -555,7 +555,7 @@ function InnerEditor({
             .filter(isImageNode)
             .map((node) => ensureImageElem(node.src).catch(() => null))
         );
-        if (cancelled) return;
+        if (isCancelled) return;
       }
 
       const initNext = [...baseNodes, ...keep].map((node) =>
@@ -580,7 +580,7 @@ function InnerEditor({
     void init();
 
     return () => {
-      cancelled = true;
+      isCancelled = true;
     };
   }, [backgroundImage, ensureImageElem, width, height, isMug, productCategory, selectedTemplateId, surfaceId]);
 
