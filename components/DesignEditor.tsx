@@ -368,6 +368,7 @@ function InnerEditor({
   const onChangeRef = useRef(onChange);
   const designBackgroundColorRef = useRef<string | null>(null);
   const initialSceneRef = useRef<HistoryEntry | null>(parseInitialScene(initialScene));
+  const imageElemCacheRef = useRef<Map<string, Promise<HTMLImageElement>>>(new Map());
 
   const isMug = (productCategory ?? "").toUpperCase() === "MUG";
   const isApparel = (productCategory ?? "").toUpperCase() === "APPAREL";
@@ -394,13 +395,20 @@ function InnerEditor({
   }, [onChange]);
 
   const ensureImageElem = useCallback(async (src: string) => {
-    setImageElems((prev) => {
-      if (prev[src]) return prev;
-      return prev;
-    });
-    const elem = await loadImage(src);
-    setImageElems((prev) => ({ ...prev, [src]: elem }));
-    return elem;
+    const cache = imageElemCacheRef.current;
+    let promise = cache.get(src);
+    if (!promise) {
+      promise = loadImage(src);
+      cache.set(src, promise);
+    }
+    try {
+      const elem = await promise;
+      setImageElems((prev) => (prev[src] === elem ? prev : { ...prev, [src]: elem }));
+      return elem;
+    } catch (error) {
+      cache.delete(src);
+      throw error;
+    }
   }, []);
 
   const emitPreview = useCallback(() => {
@@ -504,6 +512,8 @@ function InnerEditor({
   }, [height, visibleCanvasWidth]);
 
   useEffect(() => {
+    let isCancelled = false;
+
     async function init() {
       setReady(false);
       setSelectedId(null);
@@ -516,6 +526,7 @@ function InnerEditor({
           ? backgroundImage
           : `/api/image-proxy?url=${encodeURIComponent(backgroundImage)}`;
         const elem = await ensureImageElem(backgroundSrc);
+        if (isCancelled) return;
         const scale = Math.max(width / elem.naturalWidth, height / elem.naturalHeight);
         const w = elem.naturalWidth * scale;
         const h = elem.naturalHeight * scale;
@@ -537,6 +548,16 @@ function InnerEditor({
       const keep = initialSceneData
         ? initialSceneData.nodes.filter((node) => node.role !== "background")
         : nodesRef.current.filter((node) => node.role !== "background" && node.role !== "template");
+
+      if (initialSceneData) {
+        await Promise.all(
+          keep
+            .filter(isImageNode)
+            .map((node) => ensureImageElem(node.src).catch(() => null))
+        );
+        if (isCancelled) return;
+      }
+
       const initNext = [...baseNodes, ...keep].map((node) =>
         constrainEditableNode(node, width, height, productCategory, surfaceId)
       );
@@ -557,6 +578,10 @@ function InnerEditor({
     }
 
     void init();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [backgroundImage, ensureImageElem, width, height, isMug, productCategory, selectedTemplateId, surfaceId]);
 
   useEffect(() => {
