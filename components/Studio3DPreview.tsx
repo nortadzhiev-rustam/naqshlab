@@ -1034,17 +1034,24 @@ export function Studio3DPreview({
       return [{ view, textureUrl }];
     });
   }, [apparelSurfacePreviewImages, isApparel]);
-  const apparelCaptureSessionKey = useMemo(
-    () =>
-      apparelCaptureSurfaces
-        .map((entry) => `${entry.view.surfaceId}:${entry.textureUrl}`)
-        .join("|") || "__blank-apparel__",
-    [apparelCaptureSurfaces]
-  );
+  const apparelSessionCounterRef = useRef(0);
+  const [apparelCaptureSessionKey, setApparelCaptureSessionKey] = useState("__blank-apparel__");
+  const [apparelCaptureIndex, setApparelCaptureIndex] = useState(0);
   const [apparelCaptureState, setApparelCaptureState] = useState<{
     sessionKey: string;
     imagesById: Partial<Record<ApparelSurfaceId, string>>;
   }>({ sessionKey: "", imagesById: {} });
+
+  useEffect(() => {
+    if (apparelCaptureSurfaces.length === 0) {
+      setApparelCaptureSessionKey("__blank-apparel__");
+      setApparelCaptureIndex(0);
+      return;
+    }
+    apparelSessionCounterRef.current += 1;
+    setApparelCaptureSessionKey(`apparel-${apparelSessionCounterRef.current}`);
+    setApparelCaptureIndex(0);
+  }, [apparelCaptureSurfaces]);
 
   const handleApparelMockupCapture = useCallback(
     (sessionKey: string, surfaceId: ApparelSurfaceId, dataUrl: string) => {
@@ -1167,6 +1174,7 @@ export function Studio3DPreview({
     isApparel &&
     apparelCaptureSurfaces.length > 0 &&
     resolvedMockups.length < apparelCaptureSurfaces.length;
+  const currentApparelCaptureSurface = apparelCaptureSurfaces[apparelCaptureIndex] ?? null;
 
   return (
     <div className="rounded-[2rem] border border-zinc-200/70 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.24),_transparent_35%),linear-gradient(180deg,_rgba(255,255,255,0.98),_rgba(245,245,244,0.92))] p-6 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.35)] dark:border-zinc-800 dark:bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.16),_transparent_28%),linear-gradient(180deg,_rgba(24,24,27,0.98),_rgba(9,9,11,0.96))]">
@@ -1333,28 +1341,29 @@ export function Studio3DPreview({
                 opacity: 0,
               }}
             >
-              {apparelCaptureSurfaces.map(({ view, textureUrl }) => (
+              {currentApparelCaptureSurface ? (
                 <div
-                  key={`${apparelCaptureSessionKey}-${view.surfaceId}`}
+                  key={`${apparelCaptureSessionKey}-${currentApparelCaptureSurface.view.surfaceId}`}
                   className="h-[420px] w-[420px]"
                 >
                   <ClientApparelCanvas
                     modelPath={DEFAULT_APPAREL_MODEL_PATH}
-                    textureUrl={textureUrl}
-                    surfaceId={view.surfaceId}
-                    captureKey={`${apparelCaptureSessionKey}-${view.surfaceId}`}
-                    onCapture={(dataUrl) =>
+                    textureUrl={currentApparelCaptureSurface.textureUrl}
+                    surfaceId={currentApparelCaptureSurface.view.surfaceId}
+                    captureKey={`${apparelCaptureSessionKey}-${currentApparelCaptureSurface.view.surfaceId}`}
+                    onCapture={(dataUrl) => {
                       handleApparelMockupCapture(
                         apparelCaptureSessionKey,
-                        view.surfaceId,
+                        currentApparelCaptureSurface.view.surfaceId,
                         dataUrl
-                      )
-                    }
+                      );
+                      setApparelCaptureIndex((i) => i + 1);
+                    }}
                     transparentBackground
                     interactive={false}
                   />
                 </div>
-              ))}
+              ) : null}
             </div>
 
             <div className="relative overflow-hidden rounded-[1.75rem] border border-zinc-200/80 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.92),_rgba(226,232,240,0.88))] dark:border-zinc-800 dark:bg-[radial-gradient(circle_at_top,_rgba(39,39,42,0.88),_rgba(9,9,11,0.96))]">
