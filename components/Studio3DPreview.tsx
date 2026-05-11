@@ -73,7 +73,7 @@ type Studio3DPreviewProps = {
   productName: string;
   productCategory?: string;
   apparelSurfaceId?: ApparelSurfaceId;
-  apparelSurfacePreviewImages?: Record<string, string | undefined>;
+  apparelSurfacePreviewImages?: Partial<Record<ApparelSurfaceId, string>>;
   variantLabel?: string;
   previewImage?: string;
   mockupImages: string[];
