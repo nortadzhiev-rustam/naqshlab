@@ -537,6 +537,15 @@ function InnerEditor({
       const keep = initialSceneData
         ? initialSceneData.nodes.filter((node) => node.role !== "background")
         : nodesRef.current.filter((node) => node.role !== "background" && node.role !== "template");
+
+      if (initialSceneData) {
+        await Promise.all(
+          keep
+            .filter(isImageNode)
+            .map((node) => ensureImageElem(node.src).catch(() => null))
+        );
+      }
+
       const initNext = [...baseNodes, ...keep].map((node) =>
         constrainEditableNode(node, width, height, productCategory, surfaceId)
       );
