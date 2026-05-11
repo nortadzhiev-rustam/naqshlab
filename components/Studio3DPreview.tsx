@@ -28,6 +28,19 @@ type MugCaptureView = {
   target: [number, number, number];
 };
 
+type ApparelCaptureView = {
+  surfaceId: ApparelSurfaceId;
+  label: string;
+};
+
+const APPAREL_CAPTURE_VIEWS: ApparelCaptureView[] = [
+  { surfaceId: "front", label: "Front" },
+  { surfaceId: "back", label: "Back" },
+  { surfaceId: "sleeve-right", label: "Right sleeve" },
+  { surfaceId: "sleeve-left", label: "Left sleeve" },
+  { surfaceId: "neck-label-inner", label: "Neck label" },
+];
+
 const MUG_INTERACTIVE_VIEW = {
   cameraPosition: [0, 0.3, 5.2] as [number, number, number],
   target: [0, -0.05, 0] as [number, number, number],
@@ -60,6 +73,7 @@ type Studio3DPreviewProps = {
   productName: string;
   productCategory?: string;
   apparelSurfaceId?: ApparelSurfaceId;
+  apparelSurfacePreviewImages?: Partial<Record<ApparelSurfaceId, string>>;
   variantLabel?: string;
   previewImage?: string;
   mockupImages: string[];
@@ -96,6 +110,14 @@ type ApparelCanvasProps = {
   modelPath?: string;
   textureUrl?: string;
   surfaceId?: ApparelSurfaceId;
+  onTextureReadyChange?: (ready: boolean) => void;
+};
+
+type ApparelCanvasContainerProps = ApparelCanvasProps & {
+  captureKey?: string;
+  onCapture?: (dataUrl: string) => void;
+  transparentBackground?: boolean;
+  interactive?: boolean;
 };
 
 type CanvasPoint = {
@@ -193,7 +215,7 @@ function MugCameraController({ viewPreset }: { viewPreset: MugViewPreset }) {
   return null;
 }
 
-function MugSnapshotCapture({
+function SnapshotCapture({
   enabled,
   captureKey,
   onCapture,
@@ -571,7 +593,7 @@ function MugCanvas({
         />
         <Environment preset="studio" />
         <ContactShadows position={[0, -1.3, 0]} opacity={0.38} scale={5.2} blur={2.2} far={3.5} />
-        <MugSnapshotCapture
+        <SnapshotCapture
           enabled={Boolean(onCapture) && textureReady}
           captureKey={captureKey}
           onCapture={onCapture}
@@ -607,6 +629,7 @@ function MugCanvas({
       modelPath = DEFAULT_APPAREL_MODEL_PATH,
       textureUrl,
       surfaceId = "front",
+      onTextureReadyChange,
     }: ApparelCanvasProps) {
       const APPAREL_MODEL_SCALE = 4.5;
       const { scene } = useGLTF(modelPath);
@@ -614,6 +637,7 @@ function MugCanvas({
 
       useEffect(() => {
         let cancelled = false;
+        onTextureReadyChange?.(false);
 
         async function loadTexture() {
           if (!textureUrl) {
@@ -621,6 +645,7 @@ function MugCanvas({
               previous?.dispose();
               return null;
             });
+            onTextureReadyChange?.(true);
             return;
           }
 
@@ -634,6 +659,7 @@ function MugCanvas({
             previous?.dispose();
             return texture;
           });
+          onTextureReadyChange?.(true);
         }
 
         void loadTexture();
@@ -641,7 +667,7 @@ function MugCanvas({
         return () => {
           cancelled = true;
         };
-      }, [surfaceId, textureUrl]);
+      }, [surfaceId, textureUrl, onTextureReadyChange]);
 
       useEffect(() => {
         return () => {
@@ -827,25 +853,48 @@ function MugCanvas({
       modelPath = DEFAULT_APPAREL_MODEL_PATH,
       textureUrl,
       surfaceId = "front",
-    }: ApparelCanvasProps) {
+      captureKey,
+      onCapture,
+      transparentBackground = false,
+      interactive = true,
+    }: ApparelCanvasContainerProps) {
       const view = getApparelPreviewView(surfaceId);
+      const [textureReady, setTextureReady] = useState(false);
 
       return (
-        <Canvas camera={{ position: view.cameraPosition, fov: 28 }} dpr={[1, 1.75]}>
-          <color attach="background" args={["#000000"]} />
+        <Canvas
+          camera={{ position: view.cameraPosition, fov: 28 }}
+          dpr={[1, 1.75]}
+          gl={{
+            alpha: transparentBackground,
+            preserveDrawingBuffer: Boolean(onCapture),
+          }}
+        >
+          {!transparentBackground ? <color attach="background" args={["#000000"]} /> : null}
           <ambientLight intensity={1.25} />
           <directionalLight position={[3.5, 4, 5]} intensity={1.45} />
           <directionalLight position={[-3, 2.5, -4]} intensity={0.6} color="#dbeafe" />
           <Suspense fallback={null}>
             <ApparelCameraController surfaceId={surfaceId} />
-            <ApparelModel modelPath={modelPath} textureUrl={textureUrl} surfaceId={surfaceId} />
+            <ApparelModel
+              modelPath={modelPath}
+              textureUrl={textureUrl}
+              surfaceId={surfaceId}
+              onTextureReadyChange={setTextureReady}
+            />
             <Environment preset="studio" />
             <ContactShadows position={[0, -1.18, 0]} opacity={0.34} scale={6} blur={2.4} far={4.5} />
+            <SnapshotCapture
+              enabled={Boolean(onCapture) && textureReady}
+              captureKey={captureKey}
+              onCapture={onCapture}
+            />
           </Suspense>
         <OrbitControls
           makeDefault
-          enableRotate
-          enableZoom
+          enabled={interactive}
+          enableRotate={interactive}
+          enableZoom={interactive}
           enablePan={false}
           enableDamping
           rotateSpeed={0.85}
@@ -952,6 +1001,7 @@ export function Studio3DPreview({
   productName,
   productCategory,
   apparelSurfaceId,
+  apparelSurfacePreviewImages,
   variantLabel,
   previewImage,
   mockupImages,
@@ -974,6 +1024,58 @@ export function Studio3DPreview({
     imagesById: Partial<Record<MugCaptureViewId, string>>;
   }>({ sessionKey: "", imagesById: {} });
   const mugCaptureSessionKey = previewImage ?? "__blank-mug__";
+  const apparelCaptureSurfaces = useMemo(() => {
+    if (!isApparel || !apparelSurfacePreviewImages) {
+      return [] as Array<{ view: ApparelCaptureView; textureUrl: string }>;
+    }
+    return APPAREL_CAPTURE_VIEWS.flatMap((view) => {
+      const textureUrl = apparelSurfacePreviewImages[view.surfaceId];
+      if (!textureUrl) return [];
+      return [{ view, textureUrl }];
+    });
+  }, [apparelSurfacePreviewImages, isApparel]);
+  const apparelSessionCounterRef = useRef(0);
+  const [apparelCaptureSessionKey, setApparelCaptureSessionKey] = useState("__blank-apparel__");
+  const [apparelCaptureIndex, setApparelCaptureIndex] = useState(0);
+  const [apparelCaptureState, setApparelCaptureState] = useState<{
+    sessionKey: string;
+    imagesById: Partial<Record<ApparelSurfaceId, string>>;
+  }>({ sessionKey: "", imagesById: {} });
+
+  useEffect(() => {
+    if (apparelCaptureSurfaces.length === 0) {
+      setApparelCaptureSessionKey("__blank-apparel__");
+      setApparelCaptureIndex(0);
+      return;
+    }
+    apparelSessionCounterRef.current += 1;
+    setApparelCaptureSessionKey(`apparel-${apparelSessionCounterRef.current}`);
+    setApparelCaptureIndex(0);
+  }, [apparelCaptureSurfaces]);
+
+  const handleApparelMockupCapture = useCallback(
+    (sessionKey: string, surfaceId: ApparelSurfaceId, dataUrl: string) => {
+      setApparelCaptureState((current) => {
+        if (current.sessionKey !== sessionKey) {
+          return {
+            sessionKey,
+            imagesById: { [surfaceId]: dataUrl },
+          };
+        }
+        if (current.imagesById[surfaceId] === dataUrl) {
+          return current;
+        }
+        return {
+          sessionKey,
+          imagesById: {
+            ...current.imagesById,
+            [surfaceId]: dataUrl,
+          },
+        };
+      });
+    },
+    []
+  );
   const showPaintControls =
     isMug &&
     Boolean(
@@ -1031,7 +1133,21 @@ export function Studio3DPreview({
     }
 
     if (isApparel) {
-      return [] as Array<{ image: string; key: string; label: string }>;
+      if (apparelCaptureState.sessionKey !== apparelCaptureSessionKey) {
+        return [] as Array<{ image: string; key: string; label: string }>;
+      }
+
+      return apparelCaptureSurfaces.flatMap(({ view }) => {
+        const image = apparelCaptureState.imagesById[view.surfaceId];
+        if (!image) return [];
+        return [
+          {
+            image,
+            key: view.surfaceId,
+            label: view.label,
+          },
+        ];
+      });
     }
 
     return mockupImages.map((image, index) => ({
@@ -1039,12 +1155,26 @@ export function Studio3DPreview({
       key: `${index}`,
       label: `View ${index + 1}`,
     }));
-  }, [isApparel, isMug, mockupImages, mugCaptureSessionKey, mugCaptureState]);
+  }, [
+    apparelCaptureSessionKey,
+    apparelCaptureState,
+    apparelCaptureSurfaces,
+    isApparel,
+    isMug,
+    mockupImages,
+    mugCaptureSessionKey,
+    mugCaptureState,
+  ]);
 
   const safeMockupIndex =
     resolvedMockups.length > 0 ? Math.min(activeMockupIndex, resolvedMockups.length - 1) : 0;
   const activeMockup = resolvedMockups[safeMockupIndex]?.image;
   const isRenderingMugMockups = isMug && resolvedMockups.length < MUG_CAPTURE_VIEWS.length;
+  const isRenderingApparelMockups =
+    isApparel &&
+    apparelCaptureSurfaces.length > 0 &&
+    resolvedMockups.length < apparelCaptureSurfaces.length;
+  const currentApparelCaptureSurface = apparelCaptureSurfaces[apparelCaptureIndex] ?? null;
 
   return (
     <div className="rounded-[2rem] border border-zinc-200/70 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.24),_transparent_35%),linear-gradient(180deg,_rgba(255,255,255,0.98),_rgba(245,245,244,0.92))] p-6 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.35)] dark:border-zinc-800 dark:bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.16),_transparent_28%),linear-gradient(180deg,_rgba(24,24,27,0.98),_rgba(9,9,11,0.96))]">
@@ -1080,6 +1210,11 @@ export function Studio3DPreview({
                 : "Mockups update live from the studio"}
           </span>
           {isMug && isRenderingMugMockups ? (
+            <span className="rounded-full border border-zinc-200 bg-white/80 px-3 py-1 dark:border-zinc-700 dark:bg-zinc-900/70">
+              Rendering 2D mockups...
+            </span>
+          ) : null}
+          {isApparel && isRenderingApparelMockups ? (
             <span className="rounded-full border border-zinc-200 bg-white/80 px-3 py-1 dark:border-zinc-700 dark:bg-zinc-900/70">
               Rendering 2D mockups...
             </span>
@@ -1192,17 +1327,57 @@ export function Studio3DPreview({
           </div>
           </div>
         ) : isApparel ? (
-          <div className="relative overflow-hidden rounded-[1.75rem] border border-zinc-200/80 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.92),_rgba(226,232,240,0.88))] dark:border-zinc-800 dark:bg-[radial-gradient(circle_at_top,_rgba(39,39,42,0.88),_rgba(9,9,11,0.96))]">
-            <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-between px-5 pt-4 text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-500 dark:text-zinc-400">
-              <span>Viewer</span>
-              <span>{apparelSurfaceId?.replaceAll("-", " ") ?? "front"}</span>
+          <div className="space-y-4">
+            <div
+              aria-hidden="true"
+              style={{
+                position: "fixed",
+                left: -10000,
+                top: 0,
+                width: 0,
+                height: 0,
+                overflow: "hidden",
+                pointerEvents: "none",
+                opacity: 0,
+              }}
+            >
+              {currentApparelCaptureSurface ? (
+                <div
+                  key={`${apparelCaptureSessionKey}-${currentApparelCaptureSurface.view.surfaceId}`}
+                  className="h-[420px] w-[420px]"
+                >
+                  <ClientApparelCanvas
+                    modelPath={DEFAULT_APPAREL_MODEL_PATH}
+                    textureUrl={currentApparelCaptureSurface.textureUrl}
+                    surfaceId={currentApparelCaptureSurface.view.surfaceId}
+                    captureKey={`${apparelCaptureSessionKey}-${currentApparelCaptureSurface.view.surfaceId}`}
+                    onCapture={(dataUrl) => {
+                      handleApparelMockupCapture(
+                        apparelCaptureSessionKey,
+                        currentApparelCaptureSurface.view.surfaceId,
+                        dataUrl
+                      );
+                      setApparelCaptureIndex((i) => i + 1);
+                    }}
+                    transparentBackground
+                    interactive={false}
+                  />
+                </div>
+              ) : null}
             </div>
-            <div className="h-[460px]">
-              <ClientApparelCanvas
-                modelPath={DEFAULT_APPAREL_MODEL_PATH}
-                textureUrl={previewImage}
-                surfaceId={apparelSurfaceId}
-              />
+
+            <div className="relative overflow-hidden rounded-[1.75rem] border border-zinc-200/80 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.92),_rgba(226,232,240,0.88))] dark:border-zinc-800 dark:bg-[radial-gradient(circle_at_top,_rgba(39,39,42,0.88),_rgba(9,9,11,0.96))]">
+              <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-between px-5 pt-4 text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-500 dark:text-zinc-400">
+                <span>Viewer</span>
+                <span>{apparelSurfaceId?.replaceAll("-", " ") ?? "front"}</span>
+              </div>
+              <div className="h-[460px]">
+                <ClientApparelCanvas
+                  modelPath={DEFAULT_APPAREL_MODEL_PATH}
+                  textureUrl={previewImage}
+                  surfaceId={apparelSurfaceId}
+                />
+              </div>
             </div>
           </div>
         ) : (

@@ -654,6 +654,7 @@ export function ProductStudioClient({ lang, product, dict }: ProductStudioClient
                   productName={product.name}
                   productCategory={product.category}
                   apparelSurfaceId={isApparel ? selectedApparelSurfaceId : undefined}
+                  apparelSurfacePreviewImages={isApparel ? apparelSurfacePreviewImages : undefined}
                   variantLabel={selectedVariant?.label}
                   previewImage={previewImage}
                   mockupImages={displayMockups}
