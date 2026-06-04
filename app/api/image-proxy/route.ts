@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const BASE_URL = (process.env.API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
+const BASE_URL = (process.env.API_BASE_URL ?? "http://localhost:8001").replace(/\/$/, "");
 const EXTRA_ALLOWED_ORIGINS = (process.env.IMAGE_PROXY_ALLOWED_ORIGINS ?? "")
   .split(",")
   .map((value) => normalizeOrigin(value.trim()))
