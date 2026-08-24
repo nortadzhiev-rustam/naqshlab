@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { LayoutDashboard, Package, ShoppingBag, ExternalLink } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingBag, ExternalLink, Shirt } from "lucide-react";
 import { getDictionary, hasLocale, type Locale } from "@/app/[lang]/dictionaries";
 import { notFound } from "next/navigation";
 import { naqshlabLogo } from "@/lib/brand-assets";
@@ -55,6 +55,11 @@ export default async function AdminLayout({
             { href: `/${locale}/admin`, icon: LayoutDashboard, label: ad.dashboard },
             { href: `/${locale}/admin/products`, icon: Package, label: ad.products },
             { href: `/${locale}/admin/orders`, icon: ShoppingBag, label: ad.orders },
+            {
+              href: `/${locale}/admin/mockup-templates`,
+              icon: Shirt,
+              label: ad.mockupTemplates.nav,
+            },
           ].map(({ href, icon: Icon, label }) => (
             <Link
               key={href}

@@ -82,6 +82,7 @@ This project uses **Next.js 16.2.4** with **React 19.2.4**. APIs, conventions, a
 │   ├── DesignEditor.tsx        # Konva/Fabric.js canvas editor
 │   ├── Studio3DPreview.tsx     # Three.js 3D preview
 │   ├── LanguageSwitcher.tsx
+│   ├── MockupTemplateEditor.tsx # Admin quad picker + render preview
 │   ├── OrderStatusUpdater.tsx  # Admin order status dropdown
 │   └── EditProductClient.tsx   # Admin product edit form
 ├── lib/
@@ -206,6 +207,11 @@ until each render settles. If a product has no templates the backend answers
 The live WebGL preview in `Studio3DPreview.tsx` stays client-side — it has to
 keep up with dragging. The backend render is the one that gets persisted and
 shown everywhere else, so the two will not look identical.
+
+Templates are managed at `/[lang]/admin/mockup-templates`. The editor drags the
+print area's four corners over the base photo and renders a sample design
+through the real pipeline, so fold depth and shading can be tuned by eye before
+saving. Nothing renders for a product until it (or its category) has a template.
 
 ---
 
