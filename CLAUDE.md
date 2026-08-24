@@ -25,7 +25,7 @@ This project uses **Next.js 16.2.4** with **React 19.2.4**. APIs, conventions, a
 | State | Zustand 5 (cart, persisted), NextAuth 5 (auth/session) |
 | 3D / Canvas | Three.js 0.184, React Three Fiber 9, Drei 10, Konva 10, Fabric.js |
 | Payments | Stripe 22, @stripe/react-stripe-js 6 |
-| File uploads | UploadThing 6 + Sharp |
+| File uploads | UploadThing 6 |
 | Validation | Zod 4 |
 | i18n | Custom JSON dictionaries (en, ru, tg) |
 | Linting | ESLint 9 |
@@ -68,7 +68,8 @@ This project uses **Next.js 16.2.4** with **React 19.2.4**. APIs, conventions, a
 │           ├── uploadthing/{core,route}.ts
 │           ├── products/upload-image/route.ts
 │           ├── image-proxy/route.ts
-│           ├── mockups/route.ts        # Sharp-powered mockup generation
+│           ├── mockups/route.ts        # Proxy to the backend mockup service
+│           ├── mockups/[cacheKey]/route.ts  # Poll a queued render
 │           └── webhooks/stripe/route.ts
 ├── components/                 # Client components ("use client")
 │   ├── Navbar.tsx
@@ -81,6 +82,7 @@ This project uses **Next.js 16.2.4** with **React 19.2.4**. APIs, conventions, a
 │   ├── DesignEditor.tsx        # Konva/Fabric.js canvas editor
 │   ├── Studio3DPreview.tsx     # Three.js 3D preview
 │   ├── LanguageSwitcher.tsx
+│   ├── MockupTemplateEditor.tsx # Admin quad picker + render preview
 │   ├── OrderStatusUpdater.tsx  # Admin order status dropdown
 │   └── EditProductClient.tsx   # Admin product edit form
 ├── lib/
@@ -92,7 +94,8 @@ This project uses **Next.js 16.2.4** with **React 19.2.4**. APIs, conventions, a
 │   ├── apparel-editor.ts       # Design editor utilities
 │   ├── mug-wrap.ts             # Mug-specific product logic
 │   ├── brand-assets.ts         # Logo, colours, brand constants
-│   ├── mockup-templates.ts     # Mockup generation templates
+│   ├── mockups.ts              # Client helper: request + poll mockup renders
+│   ├── mockup-proxy.ts         # Server-only headers/relay for the mockup proxy
 │   ├── dictionaries.ts         # i18n utilities
 │   ├── hooks/useImageUpload.ts
 │   ├── backend/                # Server-only API callers
@@ -195,7 +198,20 @@ ignored — the backend derives every charge from the catalogue.
 
 UploadThing handles file uploads (`lib/uploadthing.ts`). Configuration in `app/[lang]/api/uploadthing/core.ts`. Product images are uploaded through the admin UI and stored on UploadThing's CDN (`utfs.io` / `*.ufs.sh`).
 
-Sharp runs server-side in `app/[lang]/api/mockups/route.ts` to composite design layers onto product mockup images.
+Mockups are composited by the **backend**, not here. The studio posts the
+design to `/api/mockups`, which is a thin proxy that adds `x-api-key` and
+forwards to the backend; `lib/mockups.ts` then polls `/api/mockups/:cacheKey`
+until each render settles. If a product has no templates the backend answers
+`404` and the studio falls back to the product's own photos.
+
+The live WebGL preview in `Studio3DPreview.tsx` stays client-side — it has to
+keep up with dragging. The backend render is the one that gets persisted and
+shown everywhere else, so the two will not look identical.
+
+Templates are managed at `/[lang]/admin/mockup-templates`. The editor drags the
+print area's four corners over the base photo and renders a sample design
+through the real pipeline, so fold depth and shading can be tuned by eye before
+saving. Nothing renders for a product until it (or its category) has a template.
 
 ---
 

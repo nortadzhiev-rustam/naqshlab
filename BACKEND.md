@@ -691,7 +691,210 @@ Update an order's status (admin action from the order detail page).
 
 ---
 
-### 4.6 Stripe Webhook Proxy
+### 4.6 Mockups
+
+Renders are cached on a hash over the artwork, the template geometry and the
+pipeline version, so identical artwork on the same template is composited once
+and shared. Customer artwork is stored on the backend's private disk; only the
+rendered mockup is public.
+
+#### `POST /mockups`
+
+Queue a mockup of this artwork on every active template that applies to the
+product, falling back to the product's category when it has none of its own.
+
+**Headers:** `x-api-key`
+
+**Request body:**
+```json
+{
+  "design":    "data:image/png;base64,...",
+  "productId": "prod_abc123",
+  "category":  "APPAREL"
+}
+```
+
+**Success response:** `200 OK` — one entry per template, `PENDING` until the
+queued render finishes (or `READY` immediately on a cache hit).
+```json
+[
+  {
+    "cacheKey":   "9f2c...",
+    "templateId": "tpl_abc123",
+    "status":     "PENDING",
+    "url":        null,
+    "width":      null,
+    "height":     null,
+    "failureReason": null
+  }
+]
+```
+
+**Errors:** `404` when no template matches the product, `422` when the design
+is not a valid image or exceeds 8 MB decoded, `503` where `ext-imagick` is
+absent on the host.
+
+#### `GET /mockups/:cacheKey`
+
+Poll a queued render. Same object shape as above; `url` is populated once
+`status` is `READY`.
+
+#### `GET /admin/mockup-templates`
+
+List mockup templates, optionally filtered to one product.
+
+**Headers:** `x-api-key`, `x-user-id`, `x-user-role: admin`
+
+**Query params:**
+- `productId` (optional) — only the templates for one product
+
+**Success response:** `200 OK` — array of template objects
+```json
+[
+  {
+    "id": "tpl_abc123",
+    "productId": "prod_abc123",
+    "category": "APPAREL",
+    "name": "Full front print",
+    "basePath": "uploads/templates/base.jpg",
+    "baseUrl": "https://cdn.example.com/base.jpg",
+    "maskPath": "uploads/templates/mask.png",
+    "maskUrl": "https://cdn.example.com/mask.png",
+    "printArea": { "quad": [[120, 160], [420, 160], [420, 440], [120, 440]] },
+    "displacementScale": 14,
+    "shadingStrength": 40,
+    "sortOrder": 0,
+    "isActive": true,
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  }
+]
+```
+
+#### `GET /admin/mockup-templates/:id`
+
+Fetch one template by ID.
+
+**Headers:** `x-api-key`, `x-user-id`, `x-user-role: admin`
+
+**Success response:** `200 OK` — one template object.
+
+**Error responses:**
+
+| Status | When |
+|--------|------|
+| `404 Not Found` | Template not found |
+
+#### `POST /admin/mockup-templates`
+
+Create a mockup template.
+
+**Headers:** `x-api-key`, `x-user-id`, `x-user-role: admin`
+
+**Request body:**
+```json
+{
+  "name": "Full front print",
+  "basePath": "uploads/templates/base.jpg",
+  "maskPath": "uploads/templates/mask.png",
+  "productId": "prod_abc123",
+  "category": "APPAREL",
+  "printArea": { "quad": [[120, 160], [420, 160], [420, 440], [120, 440]] },
+  "displacementScale": 14,
+  "shadingStrength": 40,
+  "isActive": true
+}
+```
+
+**Success response:** `201 Created` — created template object.
+
+#### `PUT /admin/mockup-templates/:id`
+
+Update a template.
+
+**Headers:** `x-api-key`, `x-user-id`, `x-user-role: admin`
+
+**Request body:** partial template payload (same shape as `POST`, using only fields to change).
+
+**Success response:** `200 OK` — updated template object.
+
+**Error responses:**
+
+| Status | When |
+|--------|------|
+| `404 Not Found` | Template not found |
+
+#### `DELETE /admin/mockup-templates/:id`
+
+Delete a template.
+
+**Headers:** `x-api-key`, `x-user-id`, `x-user-role: admin`
+
+**Success response:** `204 No Content`
+
+#### `POST /admin/mockup-templates/upload`
+
+Upload a base photo or mask for a mockup template. This is multipart form data, not JSON.
+
+**Headers:** `x-api-key`, `x-user-id`, `x-user-role: admin`
+
+**Form fields:**
+- `image` — uploaded file
+- `kind` — `base` or `mask`
+
+**Success response:** `200 OK`
+```json
+{
+  "path": "uploads/templates/base.jpg",
+  "url": "https://cdn.example.com/base.jpg",
+  "width": 1200,
+  "height": 1400
+}
+```
+
+**Errors:**
+
+| Status | When |
+|--------|------|
+| `400 Bad Request` | Missing image or invalid kind |
+| `422 Unprocessable Entity` | Uploaded file is not an image or exceeds supported limits |
+
+#### `POST /admin/mockup-templates/preview`
+
+Render a preview from unsaved geometry so an admin can tune the print area before saving. This endpoint accepts the same shape the editor posts to `/api/admin/mockup-templates/preview`.
+
+**Headers:** `x-api-key`, `x-user-id`, `x-user-role: admin`
+
+**Request body:**
+```json
+{
+  "design": "data:image/png;base64,...",
+  "basePath": "uploads/templates/base.jpg",
+  "maskPath": "uploads/templates/mask.png",
+  "printArea": { "quad": [[120, 160], [420, 160], [420, 440], [120, 440]] },
+  "displacementScale": 14,
+  "shadingStrength": 40
+}
+```
+
+**Success response:** `200 OK`
+```json
+{
+  "dataUrl": "data:image/png;base64,..."
+}
+```
+
+**Errors:**
+
+| Status | When |
+|--------|------|
+| `400 Bad Request` | Missing or invalid template payload |
+| `404 Not Found` | Base image was not found |
+| `422 Unprocessable Entity` | Design is invalid or exceeds 8 MB decoded |
+
+---
+
+### 4.7 Stripe Webhook Proxy
 
 This endpoint is called by the **Next.js server** (not Stripe directly). Stripe webhooks arrive at `POST /api/webhooks/stripe` on the Next.js app, which verifies the Stripe signature and then forwards status updates to your backend.
 
