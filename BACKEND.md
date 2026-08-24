@@ -691,7 +691,57 @@ Update an order's status (admin action from the order detail page).
 
 ---
 
-### 4.6 Stripe Webhook Proxy
+### 4.6 Mockups
+
+Renders are cached on a hash over the artwork, the template geometry and the
+pipeline version, so identical artwork on the same template is composited once
+and shared. Customer artwork is stored on the backend's private disk; only the
+rendered mockup is public.
+
+#### `POST /mockups`
+
+Queue a mockup of this artwork on every active template that applies to the
+product, falling back to the product's category when it has none of its own.
+
+**Headers:** `x-api-key`
+
+**Request body:**
+```json
+{
+  "design":    "data:image/png;base64,...",
+  "productId": "prod_abc123",
+  "category":  "APPAREL"
+}
+```
+
+**Success response:** `200 OK` — one entry per template, `PENDING` until the
+queued render finishes (or `READY` immediately on a cache hit).
+```json
+[
+  {
+    "cacheKey":   "9f2c...",
+    "templateId": "tpl_abc123",
+    "status":     "PENDING",
+    "url":        null,
+    "width":      null,
+    "height":     null,
+    "failureReason": null
+  }
+]
+```
+
+**Errors:** `404` when no template matches the product, `422` when the design
+is not a valid image or exceeds 8 MB decoded, `503` where `ext-imagick` is
+absent on the host.
+
+#### `GET /mockups/:cacheKey`
+
+Poll a queued render. Same object shape as above; `url` is populated once
+`status` is `READY`.
+
+---
+
+### 4.7 Stripe Webhook Proxy
 
 This endpoint is called by the **Next.js server** (not Stripe directly). Stripe webhooks arrive at `POST /api/webhooks/stripe` on the Next.js app, which verifies the Stripe signature and then forwards status updates to your backend.
 

@@ -30,6 +30,7 @@ import {
   DEFAULT_APPAREL_SURFACE_ID,
   getApparelEditorSurface,
 } from "@/lib/apparel-editor";
+import { requestMockups, resolveMockups } from "@/lib/mockups";
 import { useCartStore } from "@/lib/cart-store";
 import { MUG_CANVAS_HEIGHT, MUG_CANVAS_WIDTH } from "@/lib/mug-wrap";
 
@@ -205,7 +206,7 @@ export function ProductStudioClient({ lang, product, dict }: ProductStudioClient
     : paintedPreviewImage ?? editorPreviewImage;
   const previewImage = activeSurfacePreviewImage;
   const shouldGenerateMockups =
-    !isMug && !isApparel && mode === "preview" && Boolean(previewImage) && previewMockups.length > 0;
+    !isMug && !isApparel && mode === "preview" && Boolean(previewImage);
   const activeGeneratedMockups = shouldGenerateMockups ? generatedMockups : [];
   const displayMockups =
     isApparel ? [] : activeGeneratedMockups.length > 0 ? activeGeneratedMockups : previewMockups;
@@ -245,26 +246,19 @@ export function ProductStudioClient({ lang, product, dict }: ProductStudioClient
       setIsGeneratingMockups(true);
 
       try {
-        const response = await fetch("/api/mockups", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+        const queued = await requestMockups(
+          {
+            design: previewImage as string,
+            productId: product.id,
             category: product.category,
-            baseImages: previewMockups,
-            designDataUrl: previewImage,
-          }),
-          signal: controller.signal,
-        });
+          },
+          controller.signal
+        );
 
-        if (!response.ok) {
-          throw new Error("Failed to generate mockups");
-        }
+        const urls = await resolveMockups(queued, controller.signal);
 
-        const data = (await response.json()) as { mockups?: string[] };
         if (!controller.signal.aborted) {
-          setGeneratedMockups(data.mockups ?? []);
+          setGeneratedMockups(urls);
         }
       } catch {
         if (!controller.signal.aborted) {
@@ -282,7 +276,7 @@ export function ProductStudioClient({ lang, product, dict }: ProductStudioClient
     return () => {
       controller.abort();
     };
-  }, [shouldGenerateMockups, previewImage, previewMockups, product.category]);
+  }, [shouldGenerateMockups, previewImage, product.id, product.category]);
 
   function toggleTool(tool: ActiveTool) {
     setActiveTool((prev) => (prev === tool ? null : tool));
