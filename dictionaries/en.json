@@ -23,7 +23,31 @@
     "learnMore": "Learn More",
     "featuredProducts": "Featured Products",
     "viewAll": "View All",
-    "noProducts": "No products found"
+    "noProducts": "No products found",
+    "trustLine": "Made to order · 3D preview · Crafted for everyday use",
+    "collectionLabel": "Objects for everyday rituals",
+    "featuredDescription": "Start with a premium blank, then make it unmistakably yours.",
+    "processEyebrow": "How it works",
+    "processTitle": "From idea to object, without the guesswork.",
+    "processDescription": "Design in the studio, preview every angle, and order only when it feels right.",
+    "steps": [
+      {
+        "title": "Choose your canvas",
+        "body": "Pick a mug, tee, or accessory made for crisp, lasting print."
+      },
+      {
+        "title": "Build it in the studio",
+        "body": "Upload artwork, place it precisely, and inspect the result in 3D."
+      },
+      {
+        "title": "We make it real",
+        "body": "Your piece is printed to order, checked, packed, and sent your way."
+      }
+    ],
+    "finalTitle": "Make something only you could make.",
+    "finalDescription": "Start with a blank. Leave with an object that carries your mark.",
+    "startDesigning": "Start designing",
+    "shopCollection": "Shop the collection"
   },
   "products": {
     "title": "All Products",

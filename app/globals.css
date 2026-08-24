@@ -60,3 +60,25 @@ html { scroll-behavior: smooth; }
 .text-accent { color: var(--accent); }
 .bg-accent { background-color: var(--accent); }
 .border-accent { border-color: var(--accent); }
+
+/* Landing-page editorial type and subtle drafting grid. */
+.naqsh-display {
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino,
+    Georgia, serif;
+}
+
+.naqsh-landing-grid {
+  background-image:
+    linear-gradient(rgb(29 26 23 / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(29 26 23 / 0.045) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to bottom, black 0%, transparent 86%);
+}
+
+@media (prefers-color-scheme: dark) {
+  .naqsh-landing-grid {
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+  }
+}
