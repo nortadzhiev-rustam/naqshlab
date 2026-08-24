@@ -442,6 +442,51 @@ Remove a variant from a product.
 
 ---
 
+#### `POST /orders/quote`
+
+Price a cart without creating anything. The frontend calls this first so the
+Stripe PaymentIntent is opened for an amount the backend agrees with.
+
+**Headers:** `x-api-key`, `x-user-id`
+
+**Request body:** the same `items` shape as `POST /orders`. `variantId`,
+`presetDesignId` and `customizationData` are optional and may be `null`;
+`customizationData` is accepted but does not affect price.
+```json
+{
+  "items": [
+    {
+      "productId":         "prod_abc123",
+      "variantId":         "var_123",
+      "presetDesignId":    null,
+      "customizationData": null,
+      "quantity":          2
+    }
+  ]
+}
+```
+
+**Success response:** `200 OK`
+```json
+{
+  "totalAmount": 49.98,
+  "items": [
+    {
+      "productId":      "prod_abc123",
+      "variantId":      "var_123",
+      "presetDesignId": null,
+      "quantity":       2,
+      "unitPrice":      24.99
+    }
+  ]
+}
+```
+
+Returns `422` with the same validation errors as `POST /orders` when a line
+cannot be fulfilled. Stock is **not** reserved here.
+
+---
+
 #### `POST /orders`
 
 Create an order after Stripe PaymentIntent is created on the frontend.
@@ -451,7 +496,6 @@ Create an order after Stripe PaymentIntent is created on the frontend.
 **Request body:**
 ```json
 {
-  "totalAmount": 49.98,
   "shippingAddress": {
     "fullName":     "Jane Doe",
     "addressLine1": "123 Main St",
@@ -467,8 +511,7 @@ Create an order after Stripe PaymentIntent is created on the frontend.
       "variantId":         "var_123",
       "presetDesignId":    null,
       "customizationData": null,
-      "quantity":          2,
-      "unitPrice":         24.99
+      "quantity":          2
     }
   ]
 }
@@ -478,6 +521,25 @@ Create an order after Stripe PaymentIntent is created on the frontend.
 - Set `userId` from `x-user-id` header — do not accept it in the body.
 - Initial `status` must be `"PENDING"`.
 - `customizationData` is a Fabric.js canvas JSON object or `null`.
+- **Never trust prices from the client.** `unitPrice` and `totalAmount` may be
+  present in the request but are ignored; every price is re-derived server-side
+  as `product.basePrice + variant.priceModifier`, and `totalAmount` is the sum
+  of those. The response carries the authoritative figures.
+- A `variantId`/`presetDesignId` must belong to the same product as the line's
+  `productId`, and a product that has variants requires one to be chosen.
+- Creating the order **reserves stock**: each variant's `stock` is decremented
+  inside the same transaction. If any line exceeds available stock the whole
+  request fails with `422` and nothing is written.
+
+**Validation failure:** `422 Unprocessable Entity`
+```json
+{
+  "message": "The given data was invalid.",
+  "errors": {
+    "items.0.quantity": ["Only 2 left in stock for Classic Tee — M."]
+  }
+}
+```
 
 **Success response:** `201 Created` — full `Order` object (with `items` embedded, `user` not required)
 
@@ -606,6 +668,13 @@ Get full detail of any order.
 ---
 
 #### `PATCH /orders/:id/status`
+
+> **Stock follows status.** Moving an order **into** `CANCELLED` returns its
+> reserved stock; moving it back **out of** `CANCELLED` takes that stock again
+> (and fails with `422` if it is no longer available). Re-sending the status an
+> order already has is a no-op. The same rule applies to the Stripe webhook
+> proxy below, so a failed payment automatically restocks.
+
 
 Update an order's status (admin action from the order detail page).
 
