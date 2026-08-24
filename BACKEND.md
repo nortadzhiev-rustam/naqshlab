@@ -449,11 +449,19 @@ Stripe PaymentIntent is opened for an amount the backend agrees with.
 
 **Headers:** `x-api-key`, `x-user-id`
 
-**Request body:**
+**Request body:** the same `items` shape as `POST /orders`. `variantId`,
+`presetDesignId` and `customizationData` are optional and may be `null`;
+`customizationData` is accepted but does not affect price.
 ```json
 {
   "items": [
-    { "productId": "prod_abc123", "variantId": "var_123", "quantity": 2 }
+    {
+      "productId":         "prod_abc123",
+      "variantId":         "var_123",
+      "presetDesignId":    null,
+      "customizationData": null,
+      "quantity":          2
+    }
   ]
 }
 ```

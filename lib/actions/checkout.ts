@@ -8,6 +8,7 @@ import {
   quoteOrderForUser,
   type OrderLineInput,
 } from "@/lib/backend/store";
+import { updateOrderStatusByPaymentIntent } from "@/lib/backend/admin";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-03-25.dahlia",
@@ -30,11 +31,19 @@ type CartItemInput = {
   quantity: number;
 };
 
+export type CheckoutSummaryLine = {
+  name: string;
+  variantLabel?: string;
+  quantity: number;
+  unitPrice: number;
+};
+
 export type CheckoutFormState = {
   error?: string;
   clientSecret?: string;
   orderId?: string;
   totalAmount?: number;
+  lines?: CheckoutSummaryLine[];
 };
 
 function toCents(amount: number) {
@@ -119,14 +128,35 @@ export async function createCheckout(
   // The catalogue can change between the quote and the order; the order is
   // authoritative, so the intent follows it.
   if (toCents(order.totalAmount) !== toCents(quotedTotal)) {
-    await stripe.paymentIntents.update(paymentIntent.id, {
-      amount: toCents(order.totalAmount),
-    });
+    try {
+      await stripe.paymentIntents.update(paymentIntent.id, {
+        amount: toCents(order.totalAmount),
+      });
+    } catch {
+      // The order is holding stock against an intent we can no longer correct,
+      // so give both back instead of stranding them. Cancelling the order
+      // releases its stock on the backend.
+      await updateOrderStatusByPaymentIntent(paymentIntent.id, "CANCELLED").catch(
+        () => {}
+      );
+      await stripe.paymentIntents.cancel(paymentIntent.id).catch(() => {});
+      return {
+        error: "We couldn't confirm the payment amount. Please try again.",
+      };
+    }
   }
 
   return {
     clientSecret: paymentIntent.client_secret!,
     orderId: order.id,
     totalAmount: order.totalAmount,
+    // The summary is rendered from these so the breakdown always agrees with
+    // the total that is actually charged.
+    lines: order.items.map((item) => ({
+      name: item.product.name,
+      variantLabel: item.variant?.label,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+    })),
   };
 }

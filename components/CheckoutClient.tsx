@@ -11,7 +11,10 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import { createCheckout } from "@/lib/actions/checkout";
+import {
+  createCheckout,
+  type CheckoutSummaryLine,
+} from "@/lib/actions/checkout";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
@@ -74,6 +77,9 @@ export function CheckoutClient({ lang = "tg", dict }: { lang?: string; dict?: Re
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [confirmedTotal, setConfirmedTotal] = useState<number | null>(null);
+  const [confirmedLines, setConfirmedLines] = useState<
+    CheckoutSummaryLine[] | null
+  >(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -103,6 +109,7 @@ export function CheckoutClient({ lang = "tg", dict }: { lang?: string; dict?: Re
     setClientSecret(result.clientSecret!);
     setOrderId(result.orderId!);
     setConfirmedTotal(result.totalAmount ?? null);
+    setConfirmedLines(result.lines ?? null);
     setLoading(false);
   }
 
@@ -121,6 +128,15 @@ export function CheckoutClient({ lang = "tg", dict }: { lang?: string; dict?: Re
       </div>
     );
   }
+
+  const summaryLines: CheckoutSummaryLine[] =
+    confirmedLines ??
+    items.map((item) => ({
+      name: item.productName,
+      variantLabel: item.variantLabel,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+    }));
 
   const inputClass = "w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all";
   const labelClass = "text-xs font-semibold uppercase tracking-wider text-zinc-400";
@@ -188,17 +204,17 @@ export function CheckoutClient({ lang = "tg", dict }: { lang?: string; dict?: Re
       <div>
         <h2 className="text-sm font-semibold uppercase tracking-widest text-zinc-400 mb-4">{dict?.orderSummary ?? (lang === "ru" ? "Итог заказа" : "Хулосаи фармоиш")}</h2>
         <div className="rounded-2xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-6 space-y-3">
-          {items.map((item) => (
-            <div key={item.id} className="flex justify-between text-sm">
+          {summaryLines.map((line, index) => (
+            <div key={index} className="flex justify-between text-sm">
               <span className="text-zinc-600 dark:text-zinc-400">
-                {item.productName}
-                {item.variantLabel && (
-                  <span className="text-zinc-400"> — {item.variantLabel}</span>
+                {line.name}
+                {line.variantLabel && (
+                  <span className="text-zinc-400"> — {line.variantLabel}</span>
                 )}
-                {" ×"}{item.quantity}
+                {" ×"}{line.quantity}
               </span>
               <span className="font-semibold text-zinc-900 dark:text-zinc-100">
-                ${(item.unitPrice * item.quantity).toFixed(2)}
+                ${(line.unitPrice * line.quantity).toFixed(2)}
               </span>
             </div>
           ))}
