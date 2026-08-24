@@ -5,6 +5,7 @@ import { Package, LayoutDashboard, LogIn, UserPlus } from 'lucide-react';
 import Image from 'next/image';
 import type { Dictionary, Locale } from '@/app/[lang]/dictionaries';
 import { naqshlabLogo } from '@/lib/brand-assets';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export async function Navbar({
   lang,
@@ -57,6 +58,8 @@ export async function Navbar({
             >
               {nav.shop}
             </Link>
+
+            <ThemeToggle label={nav.toggleTheme} />
 
             {session?.user ? (
               <>

@@ -5,7 +5,8 @@
     "signOut": "Хуруҷ",
     "register": "Сабтном",
     "myOrders": "Фармоишҳои ман",
-    "adminPanel": "Панели маъмур"
+    "adminPanel": "Панели маъмур",
+    "toggleTheme": "Иваз кардани мавзӯи ранг"
   },
   "cart": {
     "title": "Сабад",

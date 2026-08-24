@@ -5,7 +5,8 @@
     "signOut": "Sign Out",
     "register": "Register",
     "myOrders": "My Orders",
-    "adminPanel": "Admin Panel"
+    "adminPanel": "Admin Panel",
+    "toggleTheme": "Toggle color theme"
   },
   "cart": {
     "title": "Cart",
