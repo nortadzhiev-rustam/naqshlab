@@ -5,6 +5,11 @@ const nextConfig: NextConfig = {
     root: process.cwd(),
   },
   images: {
+    // Next 16 blocks optimising upstreams that resolve to a private IP.
+    // The local backend (naqshlab.test) resolves to 127.0.0.1, so every
+    // product image 400s without this. remotePatterns below still limits
+    // which hosts may be fetched at all.
+    dangerouslyAllowLocalIP: true,
     remotePatterns: [
       {
         protocol: "https",
