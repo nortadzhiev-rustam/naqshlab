@@ -63,7 +63,7 @@ export async function resolveMockups(
 
   let pending = mockups.filter((m) => m.status === "PENDING");
 
-  while (pending.length > 0 && Date.now() < deadline) {
+  while (pending.length > 0 && !signal?.aborted && Date.now() < deadline) {
     await delay(POLL_INTERVAL_MS, signal);
 
     const results = await Promise.all(
@@ -84,12 +84,31 @@ export async function resolveMockups(
 }
 
 async function fetchMockup(cacheKey: string, signal?: AbortSignal): Promise<Mockup | null> {
+  const controller = new AbortController();
+
+  function abort() {
+    controller.abort();
+  }
+
+  if (signal) {
+    if (signal.aborted) {
+      abort();
+    } else {
+      signal.addEventListener("abort", abort, { once: true });
+    }
+  }
+
+  const timeout = setTimeout(() => abort(), 8_000);
+
   try {
-    const response = await fetch(`/api/mockups/${cacheKey}`, { signal });
+    const response = await fetch(`/api/mockups/${cacheKey}`, { signal: controller.signal });
     if (!response.ok) return null;
     return (await response.json()) as Mockup;
   } catch {
     return null;
+  } finally {
+    clearTimeout(timeout);
+    signal?.removeEventListener("abort", abort);
   }
 }
 

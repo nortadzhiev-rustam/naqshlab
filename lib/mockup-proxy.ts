@@ -8,13 +8,19 @@ export const MOCKUP_API_BASE_URL = (
 ).replace(/\/$/, "");
 
 export function mockupHeaders(req: NextRequest): Record<string, string> {
-  const forwardedFor = req.headers.get("x-forwarded-for");
+  const forwardedFor = req.headers
+    .get("x-forwarded-for")
+    ?.split(",")
+    .map((ip) => ip.trim())
+    .find(Boolean);
+  const realIp = req.headers.get("x-real-ip")?.trim();
+  const clientIp = forwardedFor ?? realIp;
 
   return {
     "x-api-key": process.env.API_SECRET_KEY ?? "",
-    // The backend throttles per client IP; without this every request would
-    // look like it came from this server and share one bucket.
-    ...(forwardedFor ? { "x-forwarded-for": forwardedFor } : {}),
+    // The backend throttles per client IP; only forward a normalized proxy-sourced
+    // value so callers cannot spoof a fresh address for each expensive render.
+    ...(clientIp ? { "x-forwarded-for": clientIp } : {}),
   };
 }
 

@@ -243,6 +243,7 @@ export function ProductStudioClient({ lang, product, dict }: ProductStudioClient
     const controller = new AbortController();
 
     async function generateMockups() {
+      setGeneratedMockups([]);
       setIsGeneratingMockups(true);
 
       try {

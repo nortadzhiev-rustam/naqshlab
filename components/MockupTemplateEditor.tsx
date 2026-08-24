@@ -202,27 +202,31 @@ export function MockupTemplateEditor({
     setBusy("save");
     setError(null);
 
-    const result = await saveMockupTemplate(draft.id, {
-      name,
-      basePath,
-      maskPath,
-      productId: draft.productId,
-      category: category || null,
-      printArea: { quad },
-      displacementScale,
-      shadingStrength,
-      isActive,
-    });
+    try {
+      const result = await saveMockupTemplate(draft.id, {
+        name,
+        basePath,
+        maskPath,
+        productId: draft.productId,
+        category: category || null,
+        printArea: { quad },
+        displacementScale,
+        shadingStrength,
+        isActive,
+      });
 
-    setBusy(null);
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
 
-    if (result.error) {
-      setError(result.error);
-      return;
+      router.push(`/${lang}/admin/mockup-templates`);
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save the template.");
+    } finally {
+      setBusy(null);
     }
-
-    router.push(`/${lang}/admin/mockup-templates`);
-    router.refresh();
   }
 
   const inputClass =
@@ -255,8 +259,17 @@ export function MockupTemplateEditor({
                 if (preview) return;
                 const img = e.currentTarget;
                 if (!natural) {
-                  setNatural({ w: img.naturalWidth, h: img.naturalHeight });
-                  setQuad(defaultQuad(img.naturalWidth, img.naturalHeight));
+                  const nextNatural = { w: img.naturalWidth, h: img.naturalHeight };
+                  setNatural(nextNatural);
+                  setQuad((current) => {
+                    const hasValidQuad =
+                      current.length === 4 &&
+                      current.every((point) => Number.isFinite(point[0]) && Number.isFinite(point[1]));
+
+                    return hasValidQuad
+                      ? current
+                      : defaultQuad(nextNatural.w, nextNatural.h);
+                  });
                 }
               }}
             />
@@ -292,10 +305,43 @@ export function MockupTemplateEditor({
                     fill="#ffffff"
                     stroke="#d81e5b"
                     strokeWidth={Math.max(2, size.w / 400)}
-                    className="cursor-grab"
+                    className="cursor-grab focus:outline-none"
+                    role="slider"
+                    tabIndex={0}
+                    aria-label={`${dict[CORNER_ORDER[index]]} corner`}
+                    focusable="true"
                     onPointerDown={(e) => {
                       e.currentTarget.setPointerCapture(e.pointerId);
                       setDragging(index);
+                    }}
+                    onKeyDown={(e) => {
+                      const delta = e.shiftKey ? 10 : 1;
+                      let nextX = point[0];
+                      let nextY = point[1];
+
+                      switch (e.key) {
+                        case "ArrowLeft":
+                          nextX = Math.max(0, point[0] - delta);
+                          break;
+                        case "ArrowRight":
+                          nextX = Math.min(size.w, point[0] + delta);
+                          break;
+                        case "ArrowUp":
+                          nextY = Math.max(0, point[1] - delta);
+                          break;
+                        case "ArrowDown":
+                          nextY = Math.min(size.h, point[1] + delta);
+                          break;
+                        default:
+                          return;
+                      }
+
+                      e.preventDefault();
+                      setQuad((current) => {
+                        const next = [...current] as Quad;
+                        next[index] = [nextX, nextY];
+                        return next;
+                      });
                     }}
                   />
                 ))}
@@ -369,8 +415,11 @@ export function MockupTemplateEditor({
         </div>
 
         <div className="space-y-1.5">
-          <span className={labelClass}>{dict.basePhoto}</span>
+          <label className={labelClass} htmlFor="template-base-photo">
+            {dict.basePhoto}
+          </label>
           <input
+            id="template-base-photo"
             type="file"
             accept="image/*"
             onChange={(e) => {
@@ -382,9 +431,12 @@ export function MockupTemplateEditor({
         </div>
 
         <div className="space-y-1.5">
-          <span className={labelClass}>{dict.mask}</span>
+          <label className={labelClass} htmlFor="template-mask-photo">
+            {dict.mask}
+          </label>
           <p className="text-xs text-zinc-500">{dict.maskHelp}</p>
           <input
+            id="template-mask-photo"
             type="file"
             accept="image/*"
             onChange={(e) => {
