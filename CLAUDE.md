@@ -178,11 +178,16 @@ When adding UI text, add the key to **all three** dictionary files.
 ## Stripe Payment Flow
 
 1. User submits checkout form → Server Action `checkout.ts`
-2. Server Action: validates address (Zod) → calls Stripe API → `POST /orders` on backend
-3. Returns `{ clientSecret, orderId }` to browser
-4. Browser renders `<PaymentElement>` → user pays
-5. Stripe webhook → `POST /api/webhooks/stripe` → Next.js verifies signature → `PATCH /orders/by-payment-intent/:id` on backend
-6. Backend sets `status: PROCESSING` or `CANCELLED`
+2. Server Action validates the address (Zod), then asks the backend to price the cart (`POST /orders/quote`)
+3. Creates a Stripe PaymentIntent for the **quoted** total
+4. `POST /orders` on backend — re-prices authoritatively and reserves stock in one transaction; the intent is updated if the total moved, or cancelled if the order fails
+5. Returns `{ clientSecret, orderId, totalAmount }` to browser
+6. Browser renders `<PaymentElement>` → user pays
+7. Stripe webhook → `POST /api/webhooks/stripe` → Next.js verifies signature → `PATCH /orders/by-payment-intent/:id` on backend
+8. Backend sets `status: PROCESSING` or `CANCELLED` (cancelling releases the reserved stock)
+
+The cart's `unitPrice` is for display only. Prices sent from the browser are
+ignored — the backend derives every charge from the catalogue.
 
 ---
 

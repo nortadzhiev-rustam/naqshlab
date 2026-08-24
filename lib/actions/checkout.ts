@@ -3,7 +3,11 @@
 import { auth } from "@/lib/auth";
 import Stripe from "stripe";
 import { z } from "zod";
-import { createOrderForUser } from "@/lib/backend/store";
+import {
+  createOrderForUser,
+  quoteOrderForUser,
+  type OrderLineInput,
+} from "@/lib/backend/store";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-03-25.dahlia",
@@ -24,14 +28,18 @@ type CartItemInput = {
   presetDesignId?: string;
   customizationData?: object;
   quantity: number;
-  unitPrice: number;
 };
 
 export type CheckoutFormState = {
   error?: string;
   clientSecret?: string;
   orderId?: string;
+  totalAmount?: number;
 };
+
+function toCents(amount: number) {
+  return Math.round(amount * 100);
+}
 
 export async function createCheckout(
   cartItems: CartItemInput[],
@@ -59,35 +67,66 @@ export async function createCheckout(
     return { error: "Please fill in all required address fields." };
   }
 
-  const totalAmount = cartItems.reduce(
-    (acc, item) => acc + item.unitPrice * item.quantity,
-    0
-  );
+  const lines: OrderLineInput[] = cartItems.map((item) => ({
+    productId: item.productId,
+    variantId: item.variantId ?? null,
+    presetDesignId: item.presetDesignId ?? null,
+    customizationData: item.customizationData ?? null,
+    quantity: item.quantity,
+  }));
 
-  // Create Stripe PaymentIntent
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: Math.round(totalAmount * 100),
-    currency: "usd",
-    automatic_payment_methods: { enabled: true },
-  });
+  // The browser's cart carries prices for display only. Everything charged is
+  // priced by the backend against the catalogue.
+  let quotedTotal: number;
+  try {
+    quotedTotal = (await quoteOrderForUser(session.user.id, lines)).totalAmount;
+  } catch (err) {
+    return {
+      error:
+        err instanceof Error ? err.message : "We couldn't price your cart.",
+    };
+  }
 
-  // Create Order via backend API
-  const order = await createOrderForUser(session.user.id, {
-    totalAmount,
-    shippingAddress: parsedAddress.data,
-    stripePaymentIntentId: paymentIntent.id,
-    items: cartItems.map((item) => ({
-      productId: item.productId,
-      variantId: item.variantId ?? null,
-      presetDesignId: item.presetDesignId ?? null,
-      customizationData: item.customizationData ?? null,
-      quantity: item.quantity,
-      unitPrice: item.unitPrice,
-    })),
-  });
+  let paymentIntent: Stripe.PaymentIntent;
+  try {
+    paymentIntent = await stripe.paymentIntents.create({
+      amount: toCents(quotedTotal),
+      currency: "usd",
+      automatic_payment_methods: { enabled: true },
+    });
+  } catch {
+    return { error: "We couldn't start the payment. Please try again." };
+  }
+
+  let order: Awaited<ReturnType<typeof createOrderForUser>>;
+  try {
+    order = await createOrderForUser(session.user.id, {
+      shippingAddress: parsedAddress.data,
+      stripePaymentIntentId: paymentIntent.id,
+      items: lines,
+    });
+  } catch (err) {
+    // Nothing was reserved, so release the intent rather than leaving it hanging.
+    await stripe.paymentIntents.cancel(paymentIntent.id).catch(() => {});
+    return {
+      error:
+        err instanceof Error
+          ? err.message
+          : "We couldn't place your order. Please try again.",
+    };
+  }
+
+  // The catalogue can change between the quote and the order; the order is
+  // authoritative, so the intent follows it.
+  if (toCents(order.totalAmount) !== toCents(quotedTotal)) {
+    await stripe.paymentIntents.update(paymentIntent.id, {
+      amount: toCents(order.totalAmount),
+    });
+  }
 
   return {
     clientSecret: paymentIntent.client_secret!,
     orderId: order.id,
+    totalAmount: order.totalAmount,
   };
 }

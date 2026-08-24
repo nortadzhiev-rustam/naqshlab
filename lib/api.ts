@@ -17,6 +17,7 @@
  *   GET  /products/slug/:slug            get product by slug (with variants + presetDesigns)
  *
  * Authenticated user (x-user-id required):
+ *   POST /orders/quote                   server-priced cart total (no side effects)
  *   GET  /orders                         user's own orders (with items + product names)
  *   GET  /orders/:id                     single order (full item detail)
  *   POST /orders                         create order
@@ -34,6 +35,37 @@
  * Internal webhook (x-api-key required):
  *   PATCH /orders/by-payment-intent/:intentId   { status: OrderStatus }
  */
+
+/**
+ * Thrown for any non-2xx response. `message` prefers the backend's own
+ * validation text (e.g. "Only 2 left in stock") so it can be shown to the user.
+ */
+export class ApiError extends Error {
+  readonly status: number;
+  readonly body: unknown;
+
+  constructor(status: number, body: unknown, message: string) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.body = body;
+  }
+}
+
+function readableMessage(body: unknown, status: number, fallback: string): string {
+  if (typeof body === "object" && body !== null) {
+    const { errors, message } = body as {
+      errors?: Record<string, string[]>;
+      message?: string;
+    };
+
+    const firstField = errors && Object.values(errors)[0]?.[0];
+    if (firstField) return firstField;
+    if (message) return message;
+  }
+
+  return `API ${status}: ${fallback}`;
+}
 
 const BASE_URL = (process.env.API_BASE_URL ?? "http://localhost:8000").replace(
   /\/$/,
@@ -84,8 +116,20 @@ export async function apiRequest<T>(
   });
 
   if (!res.ok) {
-    const text = await res.text().catch(() => res.statusText);
-    throw new Error(`API ${res.status}: ${text}`);
+    const text = await res.text().catch(() => "");
+
+    let body: unknown = text;
+    try {
+      body = JSON.parse(text);
+    } catch {
+      body = text;
+    }
+
+    throw new ApiError(
+      res.status,
+      body,
+      readableMessage(body, res.status, text || res.statusText)
+    );
   }
 
   if (res.status === 204) return undefined as T;

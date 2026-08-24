@@ -73,6 +73,7 @@ export function CheckoutClient({ lang = "tg", dict }: { lang?: string; dict?: Re
   const router = useRouter();
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [confirmedTotal, setConfirmedTotal] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -89,7 +90,6 @@ export function CheckoutClient({ lang = "tg", dict }: { lang?: string; dict?: Re
         presetDesignId: item.presetDesignId,
         customizationData: item.customizationData,
         quantity: item.quantity,
-        unitPrice: item.unitPrice,
       })),
       formData
     );
@@ -102,6 +102,7 @@ export function CheckoutClient({ lang = "tg", dict }: { lang?: string; dict?: Re
 
     setClientSecret(result.clientSecret!);
     setOrderId(result.orderId!);
+    setConfirmedTotal(result.totalAmount ?? null);
     setLoading(false);
   }
 
@@ -203,7 +204,7 @@ export function CheckoutClient({ lang = "tg", dict }: { lang?: string; dict?: Re
           ))}
           <div className="border-t border-zinc-100 dark:border-zinc-800 pt-3 mt-3 flex justify-between font-bold text-zinc-900 dark:text-zinc-100">
             <span>{dict?.total ?? (lang === "ru" ? "Итого" : "Ҷамъ")}</span>
-            <span>${subtotal().toFixed(2)}</span>
+            <span>${(confirmedTotal ?? subtotal()).toFixed(2)}</span>
           </div>
         </div>
       </div>

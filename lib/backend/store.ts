@@ -33,8 +33,15 @@ export async function getOrderForUser(userId: string, orderId: string) {
   return apiRequest<Order>(`/orders/${orderId}`, { userId });
 }
 
+export type OrderLineInput = {
+  productId: string;
+  variantId: string | null;
+  presetDesignId: string | null;
+  customizationData?: object | null;
+  quantity: number;
+};
+
 export type CreateOrderPayload = {
-  totalAmount: number;
   shippingAddress: {
     fullName: string;
     addressLine1: string;
@@ -44,15 +51,31 @@ export type CreateOrderPayload = {
     country: string;
   };
   stripePaymentIntentId: string;
+  items: OrderLineInput[];
+};
+
+export type OrderQuote = {
+  totalAmount: number;
   items: Array<{
     productId: string;
     variantId: string | null;
     presetDesignId: string | null;
-    customizationData: object | null;
     quantity: number;
     unitPrice: number;
   }>;
 };
+
+/**
+ * Ask the backend what a cart actually costs. Prices come from the catalogue,
+ * never from the browser, so this is what payment must be set up against.
+ */
+export async function quoteOrderForUser(userId: string, items: OrderLineInput[]) {
+  return apiRequest<OrderQuote>("/orders/quote", {
+    method: "POST",
+    userId,
+    body: { items },
+  });
+}
 
 export async function createOrderForUser(userId: string, payload: CreateOrderPayload) {
   return apiRequest<Order>("/orders", {
