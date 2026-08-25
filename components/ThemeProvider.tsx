@@ -8,7 +8,12 @@ import {
   useMemo,
   type ReactNode,
 } from 'react';
-import { THEME_STORAGE_KEY, type Theme } from '@/lib/theme';
+import {
+  applyTheme,
+  readStoredTheme,
+  THEME_STORAGE_KEY,
+  type Theme,
+} from '@/lib/theme';
 
 type ThemeContextValue = {
   setTheme: (theme: Theme) => void;
@@ -16,29 +21,6 @@ type ThemeContextValue = {
 };
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
-
-function readStoredTheme(): Theme {
-  try {
-    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-    return stored === 'light' || stored === 'dark' || stored === 'system'
-      ? stored
-      : 'system';
-  } catch {
-    return 'system';
-  }
-}
-
-function applyTheme(theme: Theme) {
-  const isDark =
-    theme === 'dark' ||
-    (theme === 'system' &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches);
-  const root = document.documentElement;
-
-  root.classList.toggle('dark', isDark);
-  root.dataset.theme = theme;
-  root.style.colorScheme = isDark ? 'dark' : 'light';
-}
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const setTheme = useCallback((theme: Theme) => {

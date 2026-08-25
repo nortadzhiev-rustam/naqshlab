@@ -56,15 +56,15 @@ export default async function HomePage({
   );
 
   return (
-    <div className="overflow-hidden bg-[#f3efe7] text-[#1d1a17] dark:bg-[#0f0f0e] dark:text-[#f5f1e9]">
-      <section className="relative isolate border-b border-black/10 dark:border-white/10">
+    <div className="overflow-hidden bg-landing text-landing-foreground">
+      <section className="relative isolate border-b border-landing-border">
         <div className="naqsh-landing-grid absolute inset-0 -z-20 opacity-50 dark:opacity-20" />
-        <div className="absolute -left-32 top-16 -z-10 h-80 w-80 rounded-full bg-amber-300/25 blur-3xl dark:bg-amber-500/10" />
+        <div className="absolute -left-32 top-16 -z-10 h-80 w-80 rounded-full bg-landing-glow blur-3xl" />
 
         <div className="mx-auto grid min-h-[calc(100svh-4rem)] max-w-[1440px] gap-12 px-5 py-14 sm:px-8 sm:py-20 lg:grid-cols-[1.02fr_0.98fr] lg:items-center lg:gap-10 lg:px-10 lg:py-16">
           <div className="relative z-10 max-w-3xl">
-            <div className="mb-8 inline-flex items-center gap-2.5 text-[11px] font-bold uppercase tracking-[0.22em] text-[#766b5f] dark:text-[#b7aa9a]">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#1d1a17] text-amber-300 dark:bg-amber-400 dark:text-[#1d1a17]">
+            <div className="mb-8 inline-flex items-center gap-2.5 text-[11px] font-bold uppercase tracking-[0.22em] text-landing-subtle">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-landing-primary text-landing-on-primary">
                 <Sparkles className="h-3.5 w-3.5" />
               </span>
               {home.badge}
@@ -72,40 +72,40 @@ export default async function HomePage({
 
             <h1 className="max-w-[800px] text-[clamp(3.6rem,7.2vw,7rem)] font-semibold leading-[0.84] tracking-[-0.065em]">
               <span className="block">{home.headline1}</span>
-              <span className="naqsh-display mt-3 block font-normal italic tracking-[-0.045em] text-[#b87922] dark:text-amber-300">
+              <span className="naqsh-display mt-3 block font-normal italic tracking-[-0.045em] text-landing-brand">
                 {home.headline2}
               </span>
             </h1>
 
-            <p className="mt-8 max-w-xl text-base leading-7 text-[#6c6258] dark:text-[#aaa197] sm:text-lg sm:leading-8">
+            <p className="mt-8 max-w-xl text-base leading-7 text-landing-muted sm:text-lg sm:leading-8">
               {home.subtext}
             </p>
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Link
                 href={`/${locale}/products`}
-                className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[#1d1a17] px-6 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-[#302a24] dark:bg-amber-300 dark:text-[#1d1a17] dark:hover:bg-amber-200"
+                className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-landing-primary px-6 text-sm font-bold text-landing-on-primary transition-all hover:-translate-y-0.5 hover:bg-landing-primary-hover"
               >
                 {home.shopCollection}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
                 href={`/${locale}/products?customizable=true`}
-                className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-full border border-[#1d1a17]/20 bg-white/40 px-6 text-sm font-bold text-[#1d1a17] backdrop-blur transition-all hover:border-[#1d1a17]/50 hover:bg-white/70 dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:border-white/50 dark:hover:bg-white/10"
+                className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-full border border-landing-border-strong bg-landing-control px-6 text-sm font-bold text-landing-foreground backdrop-blur transition-all hover:border-landing-border-hover hover:bg-landing-control-hover"
               >
                 {home.startDesigning}
                 <Palette className="h-4 w-4 transition-transform group-hover:rotate-12" />
               </Link>
             </div>
 
-            <div className="mt-10 flex items-start gap-3 border-t border-[#1d1a17]/15 pt-5 text-xs font-medium leading-5 text-[#766b5f] dark:border-white/15 dark:text-[#aaa197] sm:max-w-xl">
-              <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#b87922] dark:text-amber-300" />
+            <div className="mt-10 flex items-start gap-3 border-t border-landing-divider pt-5 text-xs font-medium leading-5 text-landing-subtle sm:max-w-xl">
+              <Check className="mt-0.5 h-4 w-4 shrink-0 text-landing-brand" />
               {home.trustLine}
             </div>
           </div>
 
           <div className="relative mx-auto min-h-[510px] w-full max-w-[650px] sm:min-h-[620px] lg:min-h-[660px]">
-            <div className="absolute inset-x-[4%] inset-y-0 overflow-hidden rounded-[2.25rem] border border-white/10 bg-[#211d19] shadow-[0_35px_90px_rgba(35,26,17,0.24)] dark:bg-[#1a1815] dark:shadow-black/40">
+            <div className="absolute inset-x-[4%] inset-y-0 overflow-hidden rounded-[2.25rem] border border-landing-panel-border bg-landing-panel shadow-[var(--landing-shadow-hero)]">
               <Image
                 src="/ornament.png"
                 alt=""
@@ -117,7 +117,7 @@ export default async function HomePage({
               <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/50 to-transparent" />
             </div>
 
-            <div className="absolute inset-x-[11%] bottom-[9%] top-[8%] overflow-hidden rounded-[1.75rem] border border-white/15 bg-[#d9d2ca] shadow-2xl">
+            <div className="absolute inset-x-[11%] bottom-[9%] top-[8%] overflow-hidden rounded-[1.75rem] border border-landing-panel-border-strong bg-landing-panel-media shadow-2xl">
               {heroProduct?.images[0] ? (
                 <Image
                   src={productImageUrl(heroProduct.images[0])}
@@ -128,7 +128,7 @@ export default async function HomePage({
                   className="object-cover transition-transform duration-700 hover:scale-[1.03]"
                 />
               ) : (
-                <div className="flex h-full items-center justify-center bg-[#e9e1d4] p-12">
+                <div className="flex h-full items-center justify-center bg-landing-media-soft p-12">
                   <Image
                     src="/t-shirt tech drawing/front.svg"
                     alt="Custom-print T-shirt outline"
@@ -138,8 +138,8 @@ export default async function HomePage({
                   />
                 </div>
               )}
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent px-6 pb-6 pt-20 text-white sm:px-8 sm:pb-8">
-                <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-amber-300">
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent px-6 pb-6 pt-20 text-landing-on-media sm:px-8 sm:pb-8">
+                <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-landing-brand-on-media">
                   {heroProduct?.category ?? home.collectionLabel}
                 </p>
                 <div className="mt-2 flex items-end justify-between gap-4">
@@ -155,13 +155,13 @@ export default async function HomePage({
               </div>
             </div>
 
-            <div className="absolute -left-1 top-[18%] rounded-2xl border border-[#1d1a17]/10 bg-[#fffaf1]/95 p-3.5 shadow-xl backdrop-blur dark:border-white/10 dark:bg-[#2b2722]/95 sm:-left-5 sm:p-4">
+            <div className="absolute -left-1 top-[18%] rounded-2xl border border-landing-border bg-landing-card-raised/95 p-3.5 shadow-xl backdrop-blur sm:-left-5 sm:p-4">
               <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-300 text-[#1d1a17]">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-landing-final text-landing-on-final">
                   <ScanLine className="h-[18px] w-[18px]" />
                 </span>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8b7f72] dark:text-[#aaa197]">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-landing-muted">
                     {pd.preview3d}
                   </p>
                   <p className="mt-0.5 text-xs font-bold">360°</p>
@@ -172,9 +172,9 @@ export default async function HomePage({
             {secondaryProduct?.images[0] && (
               <Link
                 href={`/${locale}/products/${secondaryProduct.slug}`}
-                className="group absolute -right-1 bottom-0 w-[42%] overflow-hidden rounded-2xl border-4 border-[#f3efe7] bg-white shadow-2xl dark:border-[#0f0f0e] dark:bg-[#25221e] sm:-right-5"
+                className="group absolute -right-1 bottom-0 w-[42%] overflow-hidden rounded-2xl border-4 border-landing bg-landing-card shadow-2xl sm:-right-5"
               >
-                <div className="relative aspect-[4/3] overflow-hidden bg-[#ddd7cf]">
+                <div className="relative aspect-[4/3] overflow-hidden bg-landing-media">
                   <Image
                     src={productImageUrl(secondaryProduct.images[0])}
                     alt={secondaryProduct.name}
@@ -193,19 +193,19 @@ export default async function HomePage({
         </div>
       </section>
 
-      <section className="border-b border-black/10 bg-[#ebe4d9] dark:border-white/10 dark:bg-[#151412]">
-        <div className="mx-auto grid max-w-[1440px] divide-y divide-black/10 px-5 sm:px-8 md:grid-cols-3 md:divide-x md:divide-y-0 lg:px-10 dark:divide-white/10">
+      <section className="border-b border-landing-border bg-landing-soft">
+        <div className="mx-auto grid max-w-[1440px] divide-y divide-landing-border px-5 sm:px-8 md:grid-cols-3 md:divide-x md:divide-y-0 lg:px-10">
           {home.steps.map((step, index) => {
             const Icon = stepIcons[index];
             return (
               <article key={step.title} className="flex gap-5 py-8 md:px-6 md:first:pl-0 md:last:pr-0 lg:py-10">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#1d1a17]/15 text-[#a86b1f] dark:border-white/15 dark:text-amber-300">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-landing-divider text-landing-brand-strong">
                   <Icon className="h-[18px] w-[18px]" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#998b7c]">0{index + 1}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-landing-subtle">0{index + 1}</p>
                   <h2 className="mt-1.5 text-base font-bold">{step.title}</h2>
-                  <p className="mt-2 max-w-sm text-sm leading-6 text-[#74695e] dark:text-[#9f968d]">{step.body}</p>
+                  <p className="mt-2 max-w-sm text-sm leading-6 text-landing-muted">{step.body}</p>
                 </div>
               </article>
             );
@@ -217,19 +217,19 @@ export default async function HomePage({
         <section className="mx-auto max-w-[1440px] px-5 py-20 sm:px-8 sm:py-28 lg:px-10">
           <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#a86b1f] dark:text-amber-300">
+              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-landing-brand-strong">
                 {home.collectionLabel}
               </p>
               <h2 className="naqsh-display mt-3 text-4xl tracking-[-0.035em] sm:text-5xl">
                 {home.featuredProducts}
               </h2>
-              <p className="mt-4 max-w-lg text-sm leading-6 text-[#74695e] dark:text-[#9f968d] sm:text-base">
+              <p className="mt-4 max-w-lg text-sm leading-6 text-landing-muted sm:text-base">
                 {home.featuredDescription}
               </p>
             </div>
             <Link
               href={`/${locale}/products`}
-              className="group inline-flex w-fit items-center gap-3 border-b border-[#1d1a17]/40 pb-1.5 text-sm font-bold dark:border-white/40"
+              className="group inline-flex w-fit items-center gap-3 border-b border-landing-border-hover pb-1.5 text-sm font-bold"
             >
               {home.viewAll}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -241,9 +241,9 @@ export default async function HomePage({
               <Link
                 key={product.id}
                 href={`/${locale}/products/${product.slug}`}
-                className="group overflow-hidden rounded-[1.75rem] border border-black/10 bg-[#faf7f1] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(52,39,25,0.14)] dark:border-white/10 dark:bg-[#191816] dark:hover:shadow-black/30"
+                className="group overflow-hidden rounded-[1.75rem] border border-landing-border bg-landing-card transition-all duration-500 hover:-translate-y-1 hover:shadow-[var(--landing-shadow-card-hover)]"
               >
-                <div className="relative aspect-[5/4] overflow-hidden bg-[#d9d3cb] dark:bg-[#25231f]">
+                <div className="relative aspect-[5/4] overflow-hidden bg-landing-media">
                   {product.images[0] ? (
                     <Image
                       src={productImageUrl(product.images[0])}
@@ -258,22 +258,22 @@ export default async function HomePage({
                     </div>
                   )}
                   {product.isCustomizable && (
-                    <span className="absolute left-4 top-4 rounded-full bg-[#fffaf1]/90 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#1d1a17] shadow-sm backdrop-blur">
+                    <span className="absolute left-4 top-4 rounded-full bg-landing-card-raised/90 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-landing-foreground shadow-sm backdrop-blur">
                       {pd.customizable}
                     </span>
                   )}
                 </div>
                 <div className="flex items-end justify-between gap-4 p-5 sm:p-6">
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#a86b1f] dark:text-amber-300">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-landing-brand-strong">
                       {product.category}
                     </p>
                     <h3 className="mt-2 text-xl font-bold tracking-[-0.02em]">{product.name}</h3>
-                    <p className="mt-2 text-sm font-semibold text-[#756b61] dark:text-[#a89f95]">
+                    <p className="mt-2 text-sm font-semibold text-landing-muted">
                       {pd.from} ${Number(product.basePrice).toFixed(2)}
                     </p>
                   </div>
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-black/15 transition-all group-hover:border-[#1d1a17] group-hover:bg-[#1d1a17] group-hover:text-white dark:border-white/20 dark:group-hover:border-amber-300 dark:group-hover:bg-amber-300 dark:group-hover:text-[#1d1a17]">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-landing-divider transition-all group-hover:border-landing-primary group-hover:bg-landing-primary group-hover:text-landing-on-primary">
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </span>
                 </div>
@@ -283,27 +283,27 @@ export default async function HomePage({
         </section>
       )}
 
-      <section className="bg-[#1d1a17] text-white dark:bg-[#e8dfd2] dark:text-[#1d1a17]">
+      <section className="bg-landing-process text-landing-on-process">
         <div className="mx-auto grid max-w-[1440px] gap-12 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20 lg:px-10">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-amber-300 dark:text-[#9a601b]">
+            <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-landing-brand-strong">
               {home.processEyebrow}
             </p>
             <h2 className="naqsh-display mt-4 max-w-lg text-4xl leading-[1.02] tracking-[-0.04em] sm:text-6xl">
               {home.processTitle}
             </h2>
-            <p className="mt-6 max-w-md text-sm leading-7 text-white/60 dark:text-[#6f655a] sm:text-base">
+            <p className="mt-6 max-w-md text-sm leading-7 text-landing-process-muted sm:text-base">
               {home.processDescription}
             </p>
           </div>
 
-          <div className="divide-y divide-white/15 border-y border-white/15 dark:divide-black/15 dark:border-black/15">
+          <div className="divide-y divide-landing-process-border border-y border-landing-process-border">
             {home.steps.map((step, index) => (
               <div key={step.title} className="grid gap-4 py-7 sm:grid-cols-[70px_1fr] sm:py-9">
-                <p className="naqsh-display text-3xl italic text-amber-300 dark:text-[#9a601b]">0{index + 1}</p>
+                <p className="naqsh-display text-3xl italic text-landing-brand-strong">0{index + 1}</p>
                 <div>
                   <h3 className="text-xl font-bold tracking-[-0.02em]">{step.title}</h3>
-                  <p className="mt-2 max-w-lg text-sm leading-6 text-white/55 dark:text-[#6f655a]">{step.body}</p>
+                  <p className="mt-2 max-w-lg text-sm leading-6 text-landing-process-muted">{step.body}</p>
                 </div>
               </div>
             ))}
@@ -312,7 +312,7 @@ export default async function HomePage({
       </section>
 
       <section className="px-5 py-16 sm:px-8 sm:py-24 lg:px-10">
-        <div className="relative mx-auto max-w-[1360px] overflow-hidden rounded-[2rem] bg-amber-300 px-6 py-14 text-[#1d1a17] sm:px-12 sm:py-16 lg:flex lg:items-end lg:justify-between lg:gap-16 lg:px-16">
+        <div className="relative mx-auto max-w-[1360px] overflow-hidden rounded-[2rem] bg-landing-final px-6 py-14 text-landing-on-final sm:px-12 sm:py-16 lg:flex lg:items-end lg:justify-between lg:gap-16 lg:px-16">
           <Image
             src="/ornament.png"
             alt=""
@@ -326,11 +326,11 @@ export default async function HomePage({
             <h2 className="naqsh-display mt-4 text-4xl leading-none tracking-[-0.045em] sm:text-6xl">
               {home.finalTitle}
             </h2>
-            <p className="mt-5 max-w-xl text-sm leading-6 text-[#5f481f] sm:text-base">{home.finalDescription}</p>
+            <p className="mt-5 max-w-xl text-sm leading-6 text-landing-final-muted sm:text-base">{home.finalDescription}</p>
           </div>
           <Link
             href={`/${locale}/products?customizable=true`}
-            className="group relative mt-9 inline-flex min-h-12 shrink-0 items-center justify-center gap-3 rounded-full bg-[#1d1a17] px-6 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-[#332c25] lg:mt-0"
+            className="group relative mt-9 inline-flex min-h-12 shrink-0 items-center justify-center gap-3 rounded-full bg-landing-final-button px-6 text-sm font-bold text-landing-on-final-button transition-all hover:-translate-y-0.5 hover:bg-landing-final-button-hover lg:mt-0"
           >
             {home.startDesigning}
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

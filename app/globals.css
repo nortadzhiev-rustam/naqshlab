@@ -11,6 +11,50 @@
   --card: #ffffff;
   --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06);
   --card-shadow-hover: 0 10px 25px -5px rgb(0 0 0 / 0.10), 0 4px 6px -2px rgb(0 0 0 / 0.06);
+  --landing-background: #f3efe7;
+  --landing-foreground: #1d1a17;
+  --landing-muted: #6c6258;
+  --landing-subtle: #766b5f;
+  --landing-nav: #62594f;
+  --landing-soft: #ebe4d9;
+  --landing-card: #faf7f1;
+  --landing-card-raised: #fffaf1;
+  --landing-media: #d9d3cb;
+  --landing-media-soft: #e9e1d4;
+  --landing-border: rgb(29 26 23 / 0.10);
+  --landing-divider: rgb(29 26 23 / 0.15);
+  --landing-border-strong: rgb(29 26 23 / 0.20);
+  --landing-border-hover: rgb(29 26 23 / 0.50);
+  --landing-brand: #b87922;
+  --landing-brand-strong: #a86b1f;
+  --landing-accent-strip: #fbbf24;
+  --landing-primary: #1d1a17;
+  --landing-primary-hover: #302a24;
+  --landing-on-primary: #ffffff;
+  --landing-control: rgb(255 255 255 / 0.40);
+  --landing-control-hover: rgb(255 255 255 / 0.70);
+  --landing-hover: rgb(29 26 23 / 0.05);
+  --landing-glow: rgb(252 211 77 / 0.25);
+  --landing-panel: #211d19;
+  --landing-panel-raised: #fffaf1;
+  --landing-panel-media: #d9d2ca;
+  --landing-panel-border: rgb(255 255 255 / 0.10);
+  --landing-panel-border-strong: rgb(255 255 255 / 0.15);
+  --landing-on-media: #ffffff;
+  --landing-brand-on-media: #fcd34d;
+  --landing-process: #1d1a17;
+  --landing-on-process: #ffffff;
+  --landing-process-muted: rgb(255 255 255 / 0.60);
+  --landing-process-border: rgb(255 255 255 / 0.15);
+  --landing-final: #fcd34d;
+  --landing-on-final: #1d1a17;
+  --landing-final-muted: #5f481f;
+  --landing-final-button: #1d1a17;
+  --landing-final-button-hover: #332c25;
+  --landing-on-final-button: #ffffff;
+  --landing-grid: rgb(29 26 23 / 0.045);
+  --landing-shadow-hero: 0 35px 90px rgb(35 26 17 / 0.24);
+  --landing-shadow-card-hover: 0 24px 60px rgb(52 39 25 / 0.14);
 }
 
 @theme inline {
@@ -21,6 +65,47 @@
   --color-muted: var(--muted);
   --color-border: var(--border);
   --color-card: var(--card);
+  --color-landing: var(--landing-background);
+  --color-landing-foreground: var(--landing-foreground);
+  --color-landing-muted: var(--landing-muted);
+  --color-landing-subtle: var(--landing-subtle);
+  --color-landing-nav: var(--landing-nav);
+  --color-landing-soft: var(--landing-soft);
+  --color-landing-card: var(--landing-card);
+  --color-landing-card-raised: var(--landing-card-raised);
+  --color-landing-media: var(--landing-media);
+  --color-landing-media-soft: var(--landing-media-soft);
+  --color-landing-border: var(--landing-border);
+  --color-landing-divider: var(--landing-divider);
+  --color-landing-border-strong: var(--landing-border-strong);
+  --color-landing-border-hover: var(--landing-border-hover);
+  --color-landing-brand: var(--landing-brand);
+  --color-landing-brand-strong: var(--landing-brand-strong);
+  --color-landing-accent-strip: var(--landing-accent-strip);
+  --color-landing-primary: var(--landing-primary);
+  --color-landing-primary-hover: var(--landing-primary-hover);
+  --color-landing-on-primary: var(--landing-on-primary);
+  --color-landing-control: var(--landing-control);
+  --color-landing-control-hover: var(--landing-control-hover);
+  --color-landing-hover: var(--landing-hover);
+  --color-landing-glow: var(--landing-glow);
+  --color-landing-panel: var(--landing-panel);
+  --color-landing-panel-raised: var(--landing-panel-raised);
+  --color-landing-panel-media: var(--landing-panel-media);
+  --color-landing-panel-border: var(--landing-panel-border);
+  --color-landing-panel-border-strong: var(--landing-panel-border-strong);
+  --color-landing-on-media: var(--landing-on-media);
+  --color-landing-brand-on-media: var(--landing-brand-on-media);
+  --color-landing-process: var(--landing-process);
+  --color-landing-on-process: var(--landing-on-process);
+  --color-landing-process-muted: var(--landing-process-muted);
+  --color-landing-process-border: var(--landing-process-border);
+  --color-landing-final: var(--landing-final);
+  --color-landing-on-final: var(--landing-on-final);
+  --color-landing-final-muted: var(--landing-final-muted);
+  --color-landing-final-button: var(--landing-final-button);
+  --color-landing-final-button-hover: var(--landing-final-button-hover);
+  --color-landing-on-final-button: var(--landing-on-final-button);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -35,6 +120,39 @@
   --card: #1c1c1a;
   --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.4);
   --card-shadow-hover: 0 10px 25px -5px rgb(0 0 0 / 0.5);
+  --landing-background: #0f0f0e;
+  --landing-foreground: #f5f1e9;
+  --landing-muted: #aaa197;
+  --landing-subtle: #b7aa9a;
+  --landing-nav: #b5aca2;
+  --landing-soft: #151412;
+  --landing-card: #191816;
+  --landing-card-raised: #2b2722;
+  --landing-media: #25231f;
+  --landing-media-soft: #25221e;
+  --landing-border: rgb(255 255 255 / 0.10);
+  --landing-divider: rgb(255 255 255 / 0.15);
+  --landing-border-strong: rgb(255 255 255 / 0.20);
+  --landing-border-hover: rgb(255 255 255 / 0.50);
+  --landing-brand: #fcd34d;
+  --landing-brand-strong: #fcd34d;
+  --landing-primary: #fcd34d;
+  --landing-primary-hover: #fde68a;
+  --landing-on-primary: #1d1a17;
+  --landing-control: rgb(255 255 255 / 0.05);
+  --landing-control-hover: rgb(255 255 255 / 0.10);
+  --landing-hover: rgb(255 255 255 / 0.10);
+  --landing-glow: rgb(245 158 11 / 0.10);
+  --landing-panel: #1a1815;
+  --landing-panel-raised: #2b2722;
+  --landing-panel-media: #25231f;
+  --landing-process: #e8dfd2;
+  --landing-on-process: #1d1a17;
+  --landing-process-muted: #6f655a;
+  --landing-process-border: rgb(29 26 23 / 0.15);
+  --landing-grid: rgb(255 255 255 / 0.05);
+  --landing-shadow-hero: 0 35px 90px rgb(0 0 0 / 0.40);
+  --landing-shadow-card-hover: 0 24px 60px rgb(0 0 0 / 0.30);
 }
 
 body {
@@ -66,14 +184,8 @@ html { scroll-behavior: smooth; }
 
 .naqsh-landing-grid {
   background-image:
-    linear-gradient(rgb(29 26 23 / 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(29 26 23 / 0.045) 1px, transparent 1px);
+    linear-gradient(var(--landing-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--landing-grid) 1px, transparent 1px);
   background-size: 42px 42px;
   mask-image: linear-gradient(to bottom, black 0%, transparent 86%);
-}
-
-.dark .naqsh-landing-grid {
-  background-image:
-    linear-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 0.05) 1px, transparent 1px);
 }

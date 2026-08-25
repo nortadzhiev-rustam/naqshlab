@@ -10,7 +10,7 @@ export function ThemeToggle({ label }: { label: string }) {
     <button
       type='button'
       onClick={toggleTheme}
-      className='group flex h-10 w-10 items-center justify-center rounded-full text-[#62594f] transition-all hover:bg-black/5 hover:text-[#1d1a17] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 dark:text-[#b5aca2] dark:hover:bg-white/10 dark:hover:text-white'
+      className='group flex h-10 w-10 items-center justify-center rounded-full text-landing-nav transition-all hover:bg-landing-hover hover:text-landing-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-landing-brand'
       aria-label={label}
       title={label}
     >

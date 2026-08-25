@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
-import Script from "next/script";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { themeInitScript } from "@/lib/theme";
 import { hasLocale, locales, type Locale } from "./dictionaries";
 
 const geistSans = Geist({
@@ -41,13 +39,6 @@ export default async function LangLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
-        <Script
-          id="naqshlab-theme-init"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: themeInitScript }}
-        />
-      </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>{children}</ThemeProvider>
       </body>

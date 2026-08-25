@@ -19,9 +19,9 @@ export async function Navbar({
 
   return (
     <header className='sticky top-0 z-30 w-full'>
-      <div className='h-[2px] w-full bg-amber-400' />
+      <div className='h-[2px] w-full bg-landing-accent-strip' />
 
-      <div className='border-b border-black/10 bg-[#f3efe7]/90 backdrop-blur-xl dark:border-white/10 dark:bg-[#0f0f0e]/90'>
+      <div className='border-b border-landing-border bg-landing/90 backdrop-blur-xl'>
         <nav className='mx-auto flex h-16 max-w-[1440px] items-center justify-between px-5 sm:px-8 lg:px-10'>
           {/* Logo */}
           <Link
@@ -54,7 +54,7 @@ export async function Navbar({
           <div className='flex items-center gap-0.5'>
             <Link
               href={`/${lang}/products`}
-              className='hidden rounded-full px-3 py-2 text-sm font-semibold text-[#62594f] transition-all hover:bg-black/5 hover:text-[#1d1a17] dark:text-[#b5aca2] dark:hover:bg-white/10 dark:hover:text-white sm:block'
+              className='hidden rounded-full px-3 py-2 text-sm font-semibold text-landing-nav transition-all hover:bg-landing-hover hover:text-landing-foreground sm:block'
             >
               {nav.shop}
             </Link>
@@ -65,7 +65,7 @@ export async function Navbar({
               <>
                 <Link
                   href={`/${lang}/orders`}
-                  className='rounded-lg p-2 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800/70 transition-all'
+                  className='rounded-lg p-2 text-landing-nav transition-all hover:bg-landing-hover hover:text-landing-foreground'
                   aria-label={nav.myOrders}
                 >
                   <Package className='h-[18px] w-[18px]' />
@@ -75,7 +75,7 @@ export async function Navbar({
                 {session.user.role === 'admin' && (
                   <Link
                     href={`/${lang}/admin`}
-                    className='rounded-lg p-2 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800/70 transition-all'
+                    className='rounded-lg p-2 text-landing-nav transition-all hover:bg-landing-hover hover:text-landing-foreground'
                     aria-label={nav.adminPanel}
                   >
                     <LayoutDashboard className='h-[18px] w-[18px]' />
@@ -90,7 +90,7 @@ export async function Navbar({
                 >
                   <button
                     type='submit'
-                    className='hidden rounded-full px-3 py-2 text-sm font-semibold text-[#62594f] transition-all hover:bg-black/5 hover:text-[#1d1a17] dark:text-[#b5aca2] dark:hover:bg-white/10 dark:hover:text-white sm:block'
+                    className='hidden rounded-full px-3 py-2 text-sm font-semibold text-landing-nav transition-all hover:bg-landing-hover hover:text-landing-foreground sm:block'
                   >
                     {nav.signOut}
                   </button>
@@ -100,7 +100,7 @@ export async function Navbar({
               <>
                 <Link
                   href={`/${lang}/login`}
-                  className='flex h-10 items-center gap-1.5 rounded-full px-2.5 text-sm font-semibold text-[#62594f] transition-all hover:bg-black/5 hover:text-[#1d1a17] dark:text-[#b5aca2] dark:hover:bg-white/10 dark:hover:text-white sm:px-3'
+                  className='flex h-10 items-center gap-1.5 rounded-full px-2.5 text-sm font-semibold text-landing-nav transition-all hover:bg-landing-hover hover:text-landing-foreground sm:px-3'
                   aria-label={nav.signIn}
                 >
                   <LogIn className='h-4 w-4' />
@@ -108,7 +108,7 @@ export async function Navbar({
                 </Link>
                 <Link
                   href={`/${lang}/register`}
-                  className='ml-0.5 flex h-10 items-center gap-1.5 rounded-full bg-[#1d1a17] px-3 text-sm font-bold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-[#302a24] dark:bg-amber-300 dark:text-[#1d1a17] dark:hover:bg-amber-200 sm:ml-1 sm:px-4'
+                  className='ml-0.5 flex h-10 items-center gap-1.5 rounded-full bg-landing-primary px-3 text-sm font-bold text-landing-on-primary shadow-sm transition-all hover:-translate-y-0.5 hover:bg-landing-primary-hover sm:ml-1 sm:px-4'
                   aria-label={nav.register}
                 >
                   <UserPlus className='h-3.5 w-3.5' />
